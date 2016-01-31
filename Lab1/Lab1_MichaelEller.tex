@@ -4,7 +4,7 @@
 % This is a simple template for a LaTeX document using the "article" class.
 % See "book", "report", "letter" for other types of document.
 
-\documentclass[11pt]{article} % use larger type; default would be 10pt
+\documentclass{article} % use larger type; default would be 10pt
 
 \usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
 
@@ -51,6 +51,8 @@
 
 %%% END Article customizations
 \usepackage{framed}
+\usepackage{amsfonts}
+\usepackage{amsmath}
 %%% The "real" document content comes below...
 
 \title{Lab 1}
@@ -61,9 +63,19 @@
 \begin{document}
 \maketitle
 
-\section{Introduction}
+\section*{Introduction}
 The goal of this lab is to explore different methods of categorizing 
-\section{Question 1}
+music into specific genres. Several methods of automated music 
+analysis exist already, including \textbf{score following}, 
+\textbf{automatic music transcription}, 
+\textbf{music recommendation}, and \textbf{machine listening}. 
+Unfortunately, all of these tools are still rudimentary. 
+Faster, more efficient, methods still need to be developed in order
+to allow automated music analysis to be implemented on portable music
+players. The goal of this lab is to develop tools to automatically
+extract some defining features of music that will help us to
+categorize them more easily. 
+\section{Sampling Rates}
 Current high-quality audio standards have a 24-bit depth and is sampled at 96 kHz. This 24-bit depth means there are 16,777,216 possible
 values for the audio signal at any given instance. It also means we are able to replicate frequencies up to 48 kHz. While this is far
 above the 20 kHz limit of human hearing, DVD audio is simply not high enough quality enough for a dolphin to listen to. 
@@ -83,7 +95,7 @@ exist though: Digital eXtreme Definition at 352.8 kHz using for recording and ed
 Digital, and Double-Rate DSD at 5,644.8 kHz used in some professional DSD recorders. 
 Therefore, as it stands, we might want to stay away from producing audio for dolphins (at least until better recording standards are developed. 
 
-\section{Question 2}
+\section{Audio signal}
 
 \begin{framed}
 \textbf{Assignment}
@@ -92,7 +104,7 @@ Therefore, as it stands, we might want to stay away from producing audio for dol
 \item Write a MATLAB function that extract T seconds of music from a given track. You
 will use the MATLAB function \sout{waveread} audioread to read a track and the function play to
 listen to the track.\\\\
-In the lab you will use T =24 seconds from the middle of each track to compare the
+In the lab you will use T =\textbf{24 seconds} from the middle of each track to compare the
 different algorithms. Download the files, and test your function.
 \end{enumerate}
 \end{framed}
@@ -100,7 +112,20 @@ different algorithms. Download the files, and test your function.
 This MATLAB function is fairly straightforward. MATLAB's built-in function \textit{audioinfo} provided all the necessary attributes to allow my function to parse
 any .wav file and extract the number of samples needed. 
 
-\section{Question 3}
+\section{Low Level Features}
+The bulk of music analysis is done in the frequency spectrum, however, 
+there are some low level features that can be found from the time-domain
+analysis of music as well. 
+\subsection{Loudness}
+There is not an easy way to describe \textit{loudness}, but 
+one way to mathematically quantize it is by finding it
+standard deviation, $\sigma(n)$. \\
+\begin{equation}\label{eq:loud_std}
+\sigma(n)=\sqrt{\frac{1}{N-1} \sum\limits_{m=-N/2}^{N/2-1} 
+[ x(n+m)-\mathbb{E}[x_n]]^2 }\hspace{5pt} \text{ with }\hspace{5pt} 
+\mathbb{E}[x_n]=\frac{1}{N}\sum\limits_{m=-N/2}^{N/2-1}x(n+m)
+\end{equation}
+
 \begin{framed}
 \textbf{Assignment}
 \begin{enumerate}
