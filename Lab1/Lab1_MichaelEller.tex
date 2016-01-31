@@ -1,0 +1,114 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+
+\documentclass[11pt]{article} % use larger type; default would be 10pt
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+%%% Examples of Article customizations
+% These packages are optional, depending whether you want the features they provide.
+% See the LaTeX Companion or other references for full information.
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+% \geometry{margin=2in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
+
+\usepackage{graphicx} % support the \includegraphics command and options
+\usepackage[normalem]{ulem}
+% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+%%% PACKAGES
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+% These packages are all incorporated in the memoir class to one degree or another...
+\usepackage{mcode}
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%%% END Article customizations
+\usepackage{framed}
+%%% The "real" document content comes below...
+
+\title{Lab 1}
+\author{Michael Eller}
+\date{February 1, 2016} % Activate to display a given date or no date (if empty),
+         	      % otherwise the current date is printed 
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+The goal of this lab is to explore different methods of categorizing 
+\section{Question 1}
+Current high-quality audio standards have a 24-bit depth and is sampled at 96 kHz. This 24-bit depth means there are 16,777,216 possible
+values for the audio signal at any given instance. It also means we are able to replicate frequencies up to 48 kHz. While this is far
+above the 20 kHz limit of human hearing, DVD audio is simply not high enough quality enough for a dolphin to listen to. 
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\item Dolphins can only hear sounds over the frequency range [7 - 120] kHz. At what sampling
+frequency $f_s$ should we sample digital audio signals for dolphins?
+\end{enumerate}
+\end{framed}
+
+Nyquist theorem states that in order to accurately recreate a signal with maximum frequency $f_s/2$, we must sample at a minimum frequency of $f_s$. 
+Therefore, our sampling frequency for digital audio signals for dolphins should be at minimum 240 kHz. Currently, one of the highest portable audio
+standards of BD-ROM LPCM (lossless) allow for 24 bit/sample and a maximum sampling frequency of only 192 kHz. Less common standards do
+exist though: Digital eXtreme Definition at 352.8 kHz using for recording and editing Super Audio CDs, SACD at 2,822.4 kHz known as Direct Stream 
+Digital, and Double-Rate DSD at 5,644.8 kHz used in some professional DSD recorders. 
+Therefore, as it stands, we might want to stay away from producing audio for dolphins (at least until better recording standards are developed. 
+
+\section{Question 2}
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{1}
+\item Write a MATLAB function that extract T seconds of music from a given track. You
+will use the MATLAB function \sout{waveread} audioread to read a track and the function play to
+listen to the track.\\\\
+In the lab you will use T =24 seconds from the middle of each track to compare the
+different algorithms. Download the files, and test your function.
+\end{enumerate}
+\end{framed}
+\lstinputlisting{./extractSound.m}
+This MATLAB function is fairly straightforward. MATLAB's built-in function \textit{audioinfo} provided all the necessary attributes to allow my function to parse
+any .wav file and extract the number of samples needed. 
+
+\section{Question 3}
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{2}
+\item Implement the loudness and ZCR and evaluate these features on the different music
+tracks. Your MATLAB function should display each feature as a time series in a separate
+figure.
+\end{enumerate}
+\end{framed}
+
+\end{document}
