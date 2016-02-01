@@ -1,0 +1,13 @@
+close all;
+centroidSpread('track201-classical.wav');
+centroidSpread('track204-classical.wav');
+centroidSpread('track370-electronic.wav');
+centroidSpread('track396-electronic.wav');
+centroidSpread('track437-jazz.wav');
+centroidSpread('track439-jazz.wav');
+centroidSpread('track463-metal.wav');
+centroidSpread('track492-metal.wav');
+centroidSpread('track547-rock.wav');
+centroidSpread('track550-rock.wav');
+centroidSpread('track707-world.wav');
+centroidSpread('track729-world.wav');

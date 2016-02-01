@@ -24,3 +24,4 @@ figure(11)
 loudness('track707-world.wav');
 figure(12)
 loudness('track729-world.wav');
+close all;

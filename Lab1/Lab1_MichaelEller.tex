@@ -69,7 +69,6 @@
 
 \begin{document}
 \maketitle
-
 \section*{Introduction}
 The goal of this lab is to explore different methods of categorizing 
 music into specific genres. Several methods of automated music 
@@ -279,7 +278,15 @@ Evaluate its performance with pure sinusoidal signals and different windows:
 \item Hann
 \item Kaiser
 \end{itemize}
+\item Compute the spectrogram of an audio track as follows:
+\begin{enumerate}
+\item Decompose a track into a sequence of $N_f$ overlapping \emph{frames} of size $N$. The overlap between two frames should be $N/2$. 
+\item Compute the magnitude squared of the Fourier transform, $|X(k)|^2,k=1,\dots,K$ over each frame $n$. 
+\item Display the Fourier transform of all the frames in a matrix of size $K \times N_f$.
 \end{enumerate}
+You will experiment with different audio tracks, as well as pure sinusoidal tones. Do the spectrograms like what you hear?
+\end{enumerate}
+In the rest of the lab, we will be using a Kaiser window to compute the Fourier transform, as explained in Equation \ref{eq:window}.
 \end{framed}
 
 In order to nicely bridge the gap between our continuous time perception of sound and a computer's discrete time processing, a windowing function is often used. 
@@ -300,7 +307,7 @@ In addition to how quickly each window is able to operate, we can also see how e
 \ref{fig:hamWindow}, and \ref{fig:kaiserWindow}.
 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{BartlettWindow.png}
 \caption{Spectrogram of Bartlett Window}
@@ -308,19 +315,77 @@ In addition to how quickly each window is able to operate, we can also see how e
 \end{figure}
 
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{HammingWindow.png}
 \caption{Spectrogram of Hamming Window}
 \label{fig:hamWindow}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{KaiserWindow.png}
 \caption{Spectrogram of Kaiser Window}
 \label{fig:kaiserWindow}
 \end{figure}
+
+In addition to being fairly fast, the Bartlett window seemed to be the most effective window in that its power to frequency ratio was very low away from the target frequency of 440 Hz. 
+
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{8}
+\item Implement all the low level spectral features them on the different tracks. Your MATLAB function should display each feature as a time series in separate figure. 
+\item Comment on the specificity of the feature, and its ability to separate different musical genres. 
+\end{enumerate}
+\end{framed}
+
+In addition to a song having low-level time-domain characteristics, low-level frequency-domain characteristics exist as well. With modern DSP chips, computing an FFT is no longer
+that big of an issue for DSP engineers. More plot for frequency centroids and frequency spreads can be found in Appendices \ref{sec:centroid} and \ref{sec:spread}, respectively.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{freqCenttrack201-classical.png}
+\caption{Frequency Centroid}
+\label{fig:cent201}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{freqSpreadtrack201-classical.png}
+\caption{Frequency Spread}
+\label{fig:spread201}
+\end{figure}
+
+Just as the in the time-domain analyses, the frequency-domain functions appear to be most helpful in identifying \emph{classical} and \emph{jazz} music. 
+There doesn't seem to be any advantage in using \textbf{centroid} vs \textbf{spread} in identifying music genres. One method may eventually be better, but it is unclear at the moment. 
+
+
+\section{Basic Psychoacoustic Quantities}
+Humans are very good at identifying music genres. Our problem is that we are too slow at it though. Humans generally identify a specific genre of music with its subjective features
+such as timbre, melody, harmony, rhythm, tempo, mood, lyrics, etc. In this section, we will focus solely on the aspects that are mathematically quantifiable. 
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{10}
+\item Implement the computation of the triangular filterbanks $H_p,p=1,\dots ,N_B$. Your function will return an array $\mathbf{fbank}$ of size $N_B \times K$ such that
+$\mathbf{fbank(p,:)}$ contains the filter bank $H_p$. 
+\item Implement the computation of the mfcc coeffecients, as defined by:
+\begin{equation}
+\text{mfcc}[p]=\sum\limits_{k=1}^{K}|H_p(k)X_n(k)|^2
+\end{equation}
+\end{enumerate}
+\end{framed}
+
+
+
+
+
+
+
+
 
 \clearpage
 \appendix
@@ -516,7 +581,7 @@ In addition to how quickly each window is able to operate, we can also see how e
 \end{figure}
 
 \clearpage
-\subsection{Timings}
+\subsection{Windows}
 
 \begin{figure}[ht!]
 \centering
@@ -526,8 +591,192 @@ In addition to how quickly each window is able to operate, we can also see how e
 \end{figure}
 
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{BartlettWindow.png}
+\caption{Spectrogram of Bartlett Window}
+\label{fig:bartWindows}
+\end{figure}
 
-%\subsection{
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{HammingWindow.png}
+\caption{Spectrogram of Hamming Window}
+\label{fig:hamWindows}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{KaiserWindow.png}
+\caption{Spectrogram of Kaiser Window}
+\label{fig:kaiserWindows}
+\end{figure}
+
+\clearpage
+\subsection{Centroid}
+\label{sec:centroid};
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack201-classical.png}
+\caption{Frequency Centroid}
+\label{fig:centr201}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack204-classical.png}
+\caption{Frequency Centroid}
+\label{fig:centr204}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack370-electronic.png}
+\caption{Frequency Centroid}
+\label{fig:cent370}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack396-electronic.png}
+\caption{Frequency Centroid}
+\label{fig:cent396}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack463-metal.png}
+\caption{Frequency Centroid}
+\label{fig:cent463}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack492-metal.png}
+\caption{Frequency Centroid}
+\label{fig:cent492}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack547-rock.png}
+\caption{Frequency Centroid}
+\label{fig:cent547}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack550-rock.png}
+\caption{Frequency Centroid}
+\label{fig:cent550}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack729-world.png}
+\caption{Frequency Centroid}
+\label{fig:cent729}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack707-world.png}
+\caption{Frequency Centroid}
+\label{fig:cent707}
+\end{figure}
+
+
+
+\clearpage
+\subsection{Spread}
+\label{sec:spread}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqSpreadtrack201-classical.png}
+\caption{Frequency Spread}
+\label{fig:spread201}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqSpreadtrack204-classical.png}
+\caption{Frequency Spread}
+\label{fig:spread204}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqSpreadtrack370-electronic.png}
+\caption{Frequency Spread}
+\label{fig:spread370}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqSpreadtrack396-electronic.png}
+\caption{Frequency Spread}
+\label{fig:spread396}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqSpreadtrack463-metal.png}
+\caption{Frequency Spread}
+\label{fig:spread463}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqSpreadtrack492-metal.png}
+\caption{Frequency Spread}
+\label{fig:spread492}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack547-rock.png}
+\caption{Frequency Centroid}
+\label{fig:cent547}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack550-rock.png}
+\caption{Frequency Centroid}
+\label{fig:cent550}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack729-world.png}
+\caption{Frequency Centroid}
+\label{fig:cent729}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{freqCenttrack707-world.png}
+\caption{Frequency Centroid}
+\label{fig:cent707}
+\end{figure}
+
 
 \clearpage
 \section{Code}

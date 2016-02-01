@@ -12,7 +12,7 @@ switch window
     otherwise
         w=kaiser(frameSize,0.5); % defaults to Kaiser window
 end
-[x,~]=audioread(filename);
+[x,~]=extractSound(filename,24);
 xn=buffer(x,frameSize);
 Y=zeros(size(xn));
 for i=1:length(xn)
