@@ -48,13 +48,15 @@
 \usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
 \renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
 \renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
-
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.85}
 %%% END Article customizations
 \usepackage{framed}
 \usepackage{amsfonts}
 \usepackage{amsmath}
 %%% The "real" document content comes below...
-
+\newcommand{\includecode}[2][c]{\lstinputlisting[caption=#2, escapechar=, style=custom#1]{#2}<!---->}
 \title{Lab 1}
 \author{Michael Eller}
 \date{February 1, 2016} % Activate to display a given date or no date (if empty),
@@ -108,8 +110,8 @@ In the lab you will use T =\textbf{24 seconds} from the middle of each track to 
 different algorithms. Download the files, and test your function.
 \end{enumerate}
 \end{framed}
-\lstinputlisting{./extractSound.m}
-This MATLAB function is fairly straightforward. MATLAB's built-in function \textit{audioinfo} provided all the necessary attributes to allow my function to parse
+\lstinputlisting[caption=extractSound.m,language=MATLAB,numbers=left]{./extractSound.m}
+This MATLAB function is fairly straightforward. MATLAB's built-in function \emph{audioinfo} provided all the necessary attributes to allow my function to parse
 any .wav file and extract the number of samples needed. 
 
 \section{Low Level Features}
@@ -117,7 +119,7 @@ The bulk of music analysis is done in the frequency spectrum, however,
 there are some low level features that can be found from the time-domain
 analysis of music as well. 
 \subsection{Loudness}
-There is not an easy way to describe \textit{loudness}, but 
+There is not an easy way to describe \emph{loudness}, but 
 one way to mathematically quantize it is by finding it
 standard deviation, $\sigma(n)$. \\
 \begin{equation}\label{eq:loud_std}
@@ -136,4 +138,121 @@ figure.
 \end{enumerate}
 \end{framed}
 
+The following is an excerpt from my \emph{loudness} function. My \emph{extractSound} function extracts 24 seconds around the middle of the song. 
+The song excerpt is then split into frames of size 255 overlapped (at least) halfway with the previous frame. 
+\lstinputlisting[caption=loudness.m,language=MATLAB,numbers=left,firstline=30,lastline=32,firstnumber=30]{./loudness.m}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Loudness_track201-classical.png}
+\caption{Loudness value per frame}
+\label{fig:loudness}
+\end{figure}
+
+Figure \ref{fig:loudness} shows an example of the function applied to "track201-classical.wav". The figure would imply that, for the selection  of the song, the beginning is quite loud, 
+then quiets down until two loud moments, and finishes at a moderately quiet section. If one listens to the song selection in question, the results of my loudness function can be confirmed.
+The other loudness plots can be found in Appendix \ref{sec:LoudnessFigures}
+
+\clearpage
+\appendix
+\section{Figures}
+\subsection{Loudness}
+\label{sec:LoudnessFigures}
+
+\setcounter{figure}{0}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.75\textwidth]{Loudness_track201-classical.png}
+\caption{Loudness value per frame, classical201}
+\label{fig:loudness_201}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\vspace{-400em}
+\includegraphics[width=0.75\textwidth]{Loudness_track204-classical.png}
+\caption{Loudness value per frame, classical204}
+\label{fig:loudness_204}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{Loudness_track370-electronic.png}
+\caption{Loudness value per frame, electronic370}
+\label{fig:loudness_370}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{Loudness_track396-electronic.png}
+\caption{Loudness value per frame, electronic396}
+\label{fig:loudness_396}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{Loudness_track437-jazz.png}
+\caption{Loudness value per frame, jazz437}
+\label{fig:loudness_437}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{Loudness_track439-jazz.png}
+\caption{Loudness value per frame, jazz439}
+\label{fig:loudness_439}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{Loudness_track463-metal.png}
+\caption{Loudness value per frame, metal463}
+\label{fig:loudness_463}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{Loudness_track492-metal.png}
+\caption{Loudness value per frame, metal492}
+\label{fig:loudness_492}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{Loudness_track547-rock.png}
+\caption{Loudness value per frame, rock547}
+\label{fig:loudness_547}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{Loudness_track550-rock.png}
+\caption{Loudness value per frame, rock550}
+\label{fig:loudness_550}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{Loudness_track707-world.png}
+\caption{Loudness value per frame, world707}
+\label{fig:loudness_707}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{Loudness_track729-world.png}
+\caption{Loudness value per frame, world729}
+\label{fig:loudness_729}
+\end{figure}
+
+
+
+%\listoffigures
 \end{document}

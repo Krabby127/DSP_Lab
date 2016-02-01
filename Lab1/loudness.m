@@ -28,17 +28,17 @@ switch nargin
         error('loudness:argChk', 'Wrong number of input arguments');
 end
 [y,~]=extractSound( filename, time );
-% y=[zeros(floor(frameSize/2),1);y;zeros(floor(frameSize/2),1)];
-frames_data = buffer(y,frameSize,ceil(frameSize/2)+2);
+frames_data = buffer(y,frameSize,ceil(frameSize/2));
 loudness_data=std(frames_data,0,1);
 if plotBool==1
-    close all;
-    figure(1);
-    plot(1:length(loudness_data),loudness_data(1,:));
-    title('Loudness per frame');
+%     close all;
+%     figure(1);
+    p=plot(1:length(loudness_data),loudness_data(1,:));
+    title(['Loudness per frame: "' filename '"']);
     xlim([0 length(loudness_data)+1]);
     xlabel('Frame Number');
     ylabel('Loudness');
+    saveas(p,['Loudness_' filename(1:end-4) '.png']);
 end
 end
 
