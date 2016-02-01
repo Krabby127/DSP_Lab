@@ -4,7 +4,7 @@ function [ ZCR_data ] = zeroCross( filename )
 %   crosses the zero amplitude line per time unit. The ZCR is related to...
 %   the pitch height, and is also correlated to the noisiness of the...
 %   signal.
-frameSize=255;
+frameSize=512;
 time=24;
 % info = audioinfo(filename);
 [y,~]=extractSound( filename, time ); % Operate on middle 24 seconds

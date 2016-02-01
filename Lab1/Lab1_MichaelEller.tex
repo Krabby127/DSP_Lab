@@ -14,15 +14,17 @@
 
 %%% PAGE DIMENSIONS
 \usepackage{geometry} % to change the page dimensions
-\geometry{a4paper} % or letterpaper (US) or a5paper or....
-% \geometry{margin=2in} % for example, change the margins to 2 inches all round
+\geometry{letterpaper} % or letterpaper (US) or a5paper or....
+ \geometry{margin=1in} % for example, change the margins to 2 inches all round
 % \geometry{landscape} % set up the page for landscape
 %   read geometry.pdf for detailed page layout information
 
 \usepackage{graphicx} % support the \includegraphics command and options
 \usepackage[normalem]{ulem}
 % \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
-
+%\usepackage[subsection]{placeins}
+\usepackage{float}
+\usepackage [autostyle, english = american]{csquotes}
 %%% PACKAGES
 \usepackage{booktabs} % for much better looking tables
 \usepackage{array} % for better arrays (eg matrices) in maths
@@ -51,10 +53,13 @@
 \renewcommand{\topfraction}{0.85}
 \renewcommand{\textfraction}{0.1}
 \renewcommand{\floatpagefraction}{0.85}
+
 %%% END Article customizations
+\usepackage{float}
 \usepackage{framed}
 \usepackage{amsfonts}
 \usepackage{amsmath}
+\usepackage{mathabx}
 %%% The "real" document content comes below...
 \newcommand{\includecode}[2][c]{\lstinputlisting[caption=#2, escapechar=, style=custom#1]{#2}<!---->}
 \title{Lab 1}
@@ -110,14 +115,28 @@ In the lab you will use T =\textbf{24 seconds} from the middle of each track to 
 different algorithms. Download the files, and test your function.
 \end{enumerate}
 \end{framed}
+
 \lstinputlisting[caption=extractSound.m,language=MATLAB,numbers=left]{./extractSound.m}
+
 This MATLAB function is fairly straightforward. MATLAB's built-in function \emph{audioinfo} provided all the necessary attributes to allow my function to parse
 any .wav file and extract the number of samples needed. 
 
-\section{Low Level Features}
+\section{Low Level Features: Time-Domain Analysis}
 The bulk of music analysis is done in the frequency spectrum, however, 
 there are some low level features that can be found from the time-domain
 analysis of music as well. 
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{2}
+\item Implement the loudness and ZCR and evaluate these features on the different music
+tracks. Your MATLAB function should display each feature as a time series in a separate
+figure.
+\item Comment on the specificity of the feature and its ability to separate different musical genre. 
+\end{enumerate}
+\end{framed}
+
 \subsection{Loudness}
 There is not an easy way to describe \emph{loudness}, but 
 one way to mathematically quantize it is by finding it
@@ -128,18 +147,10 @@ standard deviation, $\sigma(n)$. \\
 \mathbb{E}[x_n]=\frac{1}{N}\sum\limits_{m=-N/2}^{N/2-1}x(n+m)
 \end{equation}
 
-\begin{framed}
-\textbf{Assignment}
-\begin{enumerate}
-\setcounter{enumi}{2}
-\item Implement the loudness and ZCR and evaluate these features on the different music
-tracks. Your MATLAB function should display each feature as a time series in a separate
-figure.
-\end{enumerate}
-\end{framed}
 
 The following is an excerpt from my \emph{loudness} function. My \emph{extractSound} function extracts 24 seconds around the middle of the song. 
 The song excerpt is then split into frames of size 255 overlapped (at least) halfway with the previous frame. 
+
 \lstinputlisting[caption=loudness.m,language=MATLAB,numbers=left,firstline=30,lastline=32,firstnumber=30]{./loudness.m}
 
 
@@ -150,9 +161,166 @@ The song excerpt is then split into frames of size 255 overlapped (at least) hal
 \label{fig:loudness}
 \end{figure}
 
-Figure \ref{fig:loudness} shows an example of the function applied to "track201-classical.wav". The figure would imply that, for the selection  of the song, the beginning is quite loud, 
-then quiets down until two loud moments, and finishes at a moderately quiet section. If one listens to the song selection in question, the results of my loudness function can be confirmed.
-The other loudness plots can be found in Appendix \ref{sec:LoudnessFigures}
+Figure \ref{fig:loudness} shows an example of the function applied to \lq\lq{}track201-classical.wav\rq\rq{}. The figure would imply that, for the selection  of the song, the beginning is quite 
+loud, then quiets down until two loud moments, and finishes at a moderately quiet section. If one listens to the song selection in question, the results of my loudness function can be
+confirmed. The other loudness plots can be found in Appendix \ref{sec:LoudnessFigures}
+
+The \textbf{loudness} of a track appears to be most helpful in identifying \emph{classical} and \emph{jazz} music. 
+Classical is very fluid and will not transition quickly between a high vs a low loudness. 
+Jazz is a very periodic music and that is evident by the loudness plots where there are periodic spikes with a lull in between. 
+
+
+\subsection{Zero-Crossing Rate (ZCR)}
+
+Another low-level feature that can be gathered from a time-domain analysis is the Zero-Cross Rate (ZCR). This feature has been used heavily in both speech recognition and music 
+information retrieval, being a key feature to classify percussive sounds, where a frequency analysis would not be able to identify such features. 
+
+\begin{equation}\label{eq:ZCR}
+ZCR(n)=\frac{1}{2N}\sum\limits_{m=-N/2}^{N/2-1}|sgn(x(n+m))-sgn(x(n+m-1))|
+\end{equation}
+
+The following is an excerpt from my \emph{zeroCross} function. Once again, I extract the middle 24 seconds of audio from my track and store it into frames of size 255. 
+Once \textbf{ZCR\_data} has been allocated, each adjacent sample is compared to each other to check if they have crossed the zero-axis. 
+
+\lstinputlisting[caption=zeroCross.m,language=MATLAB,numbers=left,firstline=10,lastline=13,firstnumber=10]{./zeroCross.m}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{ZCR_track201-classical.png}
+\caption{Average ZCR per frame}
+\label{fig:ZCR}
+\end{figure}
+
+
+Figure \ref{fig:ZCR} shows an example of the ZCR function applied to \lq\lq{}track201-classical.wav\rq\rq{}. The plot produced by the ZCR function appears similar in shape to the plot from
+the previous loudness function. The ZCR function is more closely representative of how \textbf{noisy} a function is though. 
+The other ZCR plots can be found in Appendix \ref{sec:ZCRFigures}. 
+
+Just as the \textbf{loudness} function, the \textbf{ZCR} function appears to be most helpful in identifying \emph{classical} and \emph{jazz} music. 
+There doesn't seem to be any advantage in using \textbf{loudness} vs \textbf{ZCR} in identifying music genres. One method may prove to be faster on a large-scale integration,
+but such results cannot be determined on such a small unit test such as this one. 
+
+\section{Low Level Features: Spectral Analysis}
+In this section, our goal is to reconstruct a musical score based on the spectral analysis of a piece. If we can apply the proper window function to each frame, we might be able
+to ascertain which note(s) are being played at that specific moment. 
+
+To properly evaluate the frequency domain of a frame, we need to perform the following operations:
+
+\begin{framed}
+\begin{equation}
+\label{eq:window}
+\begin{aligned}
+Y=\text{FFT}(w.*x_n);\\
+K=N/2+1;\\
+X_n=Y(1:K);\\
+\end{aligned}
+\end{equation}
+\end{framed}
+where $w$ is our windowing function and $N$ is the number of samples per frame.
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{4}
+\item Let
+\begin{equation}
+\label{eq:cosFT}
+x[n]=\cos(\omega_0 n), n \in\mathbb{Z}
+\end{equation}
+Derive the theoretical expression of the discrete time Fourier transform of $x$, given by
+\begin{equation}
+\label{eq:DFT}
+X(e^{j \omega})=\sum\limits_{n=-\infty}^{\infty} x[n]e^{-j \omega n}
+\end{equation}
+\end{enumerate}
+\end{framed}
+
+The Fourier transform of a cosine function is trivial at this point. A cosine function can be regarded as a sum of two complex exponentials. And the Fourier transform of a complex
+exponential is simply the dirac delta function offset by frequency $\omega$. 
+Therefore, the Fourier transform of $x[n]=\cos(\omega_0 n), n \in\mathbb{Z}$ is:\\
+\[ \sqrt{\frac{\pi}{2}}\delta(\omega-\omega_0)+\sqrt{\frac{\pi}{2}}\delta(\omega+\omega_0)\]
+
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{5}
+\item In practice, we work with a finite signal, and we multiply the signal $x[n]$ by a window $w[n]$. We assume that the window $w$ is non zero at times $n=-N/2,\dots,N/2$, 
+and we define
+\begin{equation} y[n]=x[n]w[n-N/2] \end{equation}
+Derive the expression of the Fourier transform $y[n]$ in terms of the Fourier transform of $x$ and the Fourier transform of the window $w$. 
+\end{enumerate}
+\end{framed}
+
+From prior knowledge, we know that the Fourier transform multiplication of two functions in time domain is equal to the periodic convolution of two functions in the Fourier domain, as follows:
+\[\text{if } y[n]=x[n]\cdot h[n] \]
+\[\text{ then, }\\
+Y(e^{j\omega})=\frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{j\theta}) \cdot H(e^{j(\omega-\theta)}) d\theta
+\]
+We also know that a shift in time equates to a scaling in the frequency domain:
+\[\mathcal{F}(x[n-k])=X(e^{j\omega})e^{-j\omega k}
+\]
+From these two properties, we can equate the DTFT of $y[n]$. 
+
+\[\text{if } y[n]=x[n]w[n-N],\]
+\[\text{then } Y(e^{j\omega})=\frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{j\theta}) \cdot (H(e^{j(\omega-\theta)})\cdot e^{-j\omega N}) d\theta\]
+
+
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{6}
+\item Implement the computation of the windowed Fourier transform of $y$, given by Equation \ref{eq:window}.
+Evaluate its performance with pure sinusoidal signals and different windows:
+\begin{itemize}
+\item Bartlett
+\item Hann
+\item Kaiser
+\end{itemize}
+\end{enumerate}
+\end{framed}
+
+In order to nicely bridge the gap between our continuous time perception of sound and a computer's discrete time processing, a windowing function is often used. 
+This way, we are able to recreate the desired signal as close as possible without generating any high frequency components that result from abruptly stopping a time sample. 
+In Figure \ref{fig:windowsTiming} below, we are able to see the performance differences between each window. Overall, the Bartmann and Hamming windows seemed to perform
+the fastest, albeit by only a few milliseconds. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{windowsTiming.png}
+\caption{Timing comparison of different windows}
+\label{fig:windowsTiming}
+\end{figure}
+
+\lstinputlisting[caption=windows.m,language=MATLAB,numbers=left,firstline=15,firstnumber=15]{./windows.m}
+
+In addition to how quickly each window is able to operate, we can also see how effectively each window extracts our signal. This can be seen in figures \ref{fig:bartWindow},
+\ref{fig:hamWindow}, and \ref{fig:kaiserWindow}.
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\textwidth]{BartlettWindow.png}
+\caption{Spectrogram of Bartlett Window}
+\label{fig:bartWindow}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{HammingWindow.png}
+\caption{Spectrogram of Hamming Window}
+\label{fig:hamWindow}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{KaiserWindow.png}
+\caption{Spectrogram of Kaiser Window}
+\label{fig:kaiserWindow}
+\end{figure}
 
 \clearpage
 \appendix
@@ -160,15 +328,14 @@ The other loudness plots can be found in Appendix \ref{sec:LoudnessFigures}
 \subsection{Loudness}
 \label{sec:LoudnessFigures}
 
-\setcounter{figure}{0}
-\begin{figure}[h!]
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.75\textwidth]{Loudness_track201-classical.png}
 \caption{Loudness value per frame, classical201}
 \label{fig:loudness_201}
 \end{figure}
 
-
+%\setcounter{figure}{2}
 \begin{figure}
 \centering
 \vspace{-400em}
@@ -245,14 +412,135 @@ The other loudness plots can be found in Appendix \ref{sec:LoudnessFigures}
 \end{figure}
 
 
-\begin{figure}
+\begin{figure}[h!]
 \centering
 \includegraphics[width=0.75\textwidth]{Loudness_track729-world.png}
 \caption{Loudness value per frame, world729}
 \label{fig:loudness_729}
 \end{figure}
 
+\clearpage
+\subsection{Zero-Cross Rate}
+\label{sec:ZCRFigures}
+
+%\setcounter{figure}{1}
+\begin{figure}[ht!]
+%\vspace{-300em}
+\centering
+\includegraphics[width=0.75\textwidth]{ZCR_track201-classical.png}
+\caption{ZCR value per frame, classical201}
+\label{fig:ZCR_201}
+\end{figure}
+
+%\setcounter{figure}{3}
+\begin{figure}[!hb]
+\centering
+\includegraphics[width=0.75\textwidth]{ZCR_track204-classical.png}
+\caption{ZCR value per frame, classical204}
+\label{fig:ZCR_204}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{ZCR_track370-electronic.png}
+\caption{ZCR value per frame, electronic370}
+\label{fig:ZCR_370}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{ZCR_track396-electronic.png}
+\caption{ZCR value per frame, electronic396}
+\label{fig:ZCR_396}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{ZCR_track437-jazz.png}
+\caption{ZCR value per frame, jazz437}
+\label{fig:ZCR_437}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{ZCR_track439-jazz.png}
+\caption{ZCR value per frame, jazz439}
+\label{fig:ZCR_439}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{ZCR_track463-metal.png}
+\caption{ZCR value per frame, metal463}
+\label{fig:ZCR_463}
+\end{figure}
 
 
-%\listoffigures
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{ZCR_track492-metal.png}
+\caption{ZCR value per frame, metal492}
+\label{fig:ZCR_492}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{ZCR_track547-rock.png}
+\caption{ZCR value per frame, rock547}
+\label{fig:ZCR_547}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{ZCR_track550-rock.png}
+\caption{ZCR value per frame, rock550}
+\label{fig:ZCR_550}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{ZCR_track707-world.png}
+\caption{ZCR value per frame, world707}
+\label{fig:ZCR_707}
+\end{figure}
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.75\textwidth]{ZCR_track729-world.png}
+\caption{ZCR value per frame, world729}
+\label{fig:ZCR_729}
+\end{figure}
+
+\clearpage
+\subsection{Timings}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.75\textwidth]{windowsTiming.png}
+\caption{Timing comparison of different windows}
+\label{fig:windowsTimings}
+\end{figure}
+
+
+
+%\subsection{
+
+\clearpage
+\section{Code}
+
+\lstinputlisting[caption=extractSound.m,language=MATLAB,numbers=left]{./extractSound.m}
+
+\lstinputlisting[caption=loudness.m,language=MATLAB,numbers=left]{./loudness.m}
+\lstinputlisting[caption=loudnessPlot.m,language=MATLAB,numbers=left]{./loudnessPlot.m}
+
+\lstinputlisting[caption=zeroCross.m,language=MATLAB,numbers=left]{./zeroCross.m}
+\lstinputlisting[caption=zeroPlot.m,language=MATLAB,numbers=left]{./zeroPlot.m}
+
+\lstinputlisting[caption=windows.m,language=MATLAB,numbers=left]{./windows.m}
+\lstinputlisting[caption=windowsTiming.m,language=MATLAB,numbers=left]{./windowsTiming.m}
+
 \end{document}

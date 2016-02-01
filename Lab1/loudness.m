@@ -9,7 +9,7 @@ function [ loudness_data ] = loudness( filename,varargin )
 %   plotBool = whether or not to plot results; default is true
 switch nargin
     case 1
-        frameSize=255;
+        frameSize=512;
         time=24;
         plotBool=1;
     case 2
@@ -31,8 +31,6 @@ end
 frames_data = buffer(y,frameSize,ceil(frameSize/2));
 loudness_data=std(frames_data,0,1);
 if plotBool==1
-%     close all;
-%     figure(1);
     p=plot(1:length(loudness_data),loudness_data(1,:));
     title(['Loudness per frame: "' filename '"']);
     xlim([0 length(loudness_data)+1]);
