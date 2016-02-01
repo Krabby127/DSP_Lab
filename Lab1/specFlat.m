@@ -4,4 +4,14 @@ function [ SFn ] = specFlat( filename )
 %   means of the magnitude of the Fourier transform
 Xk=freqDist(filename);
 SFn=(geomean(Xk)./mean(Xk));
+
+close all;
+figure
+plot(SFn);
+title(['Spectral Flatness: "' filename '"']);
+xlabel('Frame Number');
+ylabel('Flatness');
+xlim([0,length(SFn)]);
+saveas(gca,['specFlat_' filename(1:end-4) '.png']);
+close all;
 end
