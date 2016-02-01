@@ -17,7 +17,7 @@ end
 
 for n=1:b
     for k=1:a
-        sigmaK(n)=sigmaK(n)+(1/(a-1))*(Xk(k,n)-centroid(n))^2;        
+        sigmaK(n)=sigmaK(n)+(1/(a-1))*(Xk(k,n)-centroid(n))^2;
     end
 end
 sigmaK=sqrt(sigmaK);

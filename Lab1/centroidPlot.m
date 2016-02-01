@@ -11,3 +11,4 @@ centroidSpread('track547-rock.wav');
 centroidSpread('track550-rock.wav');
 centroidSpread('track707-world.wav');
 centroidSpread('track729-world.wav');
+close all;
