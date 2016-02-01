@@ -1,6 +1,5 @@
 function [Xn] = windows( filename, window )
 %windows Implement the computation of the windowed Fourier transform of y
-% start=cputime;
 frameSize=512;
 switch window
     case 1
@@ -21,6 +20,6 @@ end
 K=frameSize/2+1;
 Xn=size(Y);
 for i=1:length(xn)
-   Xn(1:K,i)=Y(1:K,i);
+    Xn(1:K,i)=Y(1:K,i);
 end
 end

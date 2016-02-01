@@ -69,7 +69,10 @@
 
 \begin{document}
 \maketitle
-\section*{Introduction}
+
+\tableofcontents
+\clearpage
+\section{Introduction}
 The goal of this lab is to explore different methods of categorizing 
 music into specific genres. Several methods of automated music 
 analysis exist already, including \textbf{score following}, 
@@ -351,16 +354,33 @@ that big of an issue for DSP engineers. More plot for frequency centroids and fr
 \label{fig:cent201}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \includegraphics[width=\textwidth]{freqSpreadtrack201-classical.png}
 \caption{Frequency Spread}
-\label{fig:spread201}
+\label{fig:spread_201}
 \end{figure}
+
+
 
 Just as the in the time-domain analyses, the frequency-domain functions appear to be most helpful in identifying \emph{classical} and \emph{jazz} music. 
 There doesn't seem to be any advantage in using \textbf{centroid} vs \textbf{spread} in identifying music genres. One method may eventually be better, but it is unclear at the moment. 
 
+Also, despite a more in depth analysis, these lower-level spectrum analysis tools seem to provide the same (if not less) help than the simple time-domain analyses. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{specFluxtrack201-classical.png}
+\caption{Spectral Flux}
+\label{fig:flux_201}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{specFlat_track201-classical.png}
+\caption{Spectral Flatness}
+\label{fig:flat_201}
+\end{figure}
 
 \section{Basic Psychoacoustic Quantities}
 Humans are very good at identifying music genres. Our problem is that we are too slow at it though. Humans generally identify a specific genre of music with its subjective features
@@ -372,14 +392,22 @@ such as timbre, melody, harmony, rhythm, tempo, mood, lyrics, etc. In this secti
 \setcounter{enumi}{10}
 \item Implement the computation of the triangular filterbanks $H_p,p=1,\dots ,N_B$. Your function will return an array $\mathbf{fbank}$ of size $N_B \times K$ such that
 $\mathbf{fbank(p,:)}$ contains the filter bank $H_p$. 
-\item Implement the computation of the mfcc coeffecients, as defined by:
+\item Implement the computation of the mfcc coefficients, as defined by:
 \begin{equation}
 \text{mfcc}[p]=\sum\limits_{k=1}^{K}|H_p(k)X_n(k)|^2
 \end{equation}
 \end{enumerate}
 \end{framed}
 
+With a proper filter bank created, we are one step closer to categorizing music into genres. Now that we are using a Mel scale, hopefully we will be able to categorize the pitches
+more closely to how a human ear would hear them. As opposed to a computer simply processing raw data. 
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{melFilterBank.png}
+\caption{Mel Filter Bank}
+\label{fig:mel_Bank}
+\end{figure}
 
 
 
@@ -748,35 +776,202 @@ $\mathbf{fbank(p,:)}$ contains the filter bank $H_p$.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{freqCenttrack547-rock.png}
-\caption{Frequency Centroid}
-\label{fig:cent547}
+\includegraphics[width=0.75\textwidth]{freqSpreadtrack547-rock.png}
+\caption{Frequency Spread}
+\label{fig:spread547}
 \end{figure}
 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{freqCenttrack550-rock.png}
-\caption{Frequency Centroid}
-\label{fig:cent550}
+\includegraphics[width=0.75\textwidth]{freqSpreadtrack550-rock.png}
+\caption{Frequency Spread}
+\label{fig:spread550}
 \end{figure}
 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{freqCenttrack729-world.png}
-\caption{Frequency Centroid}
-\label{fig:cent729}
+\includegraphics[width=0.75\textwidth]{freqSpreadtrack729-world.png}
+\caption{Frequency Spread}
+\label{fig:spread729}
 \end{figure}
 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{freqCenttrack707-world.png}
-\caption{Frequency Centroid}
-\label{fig:cent707}
+\includegraphics[width=0.75\textwidth]{freqSpreadtrack707-world.png}
+\caption{Frequency Spread}
+\label{fig:spread707}
 \end{figure}
 
+
+\subsection{Flatness}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFlat_track201-classical.png}
+\caption{Spectral Flatness}
+\label{fig:flat201}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFlat_track204-classical.png}
+\caption{Spectral Flatness}
+\label{fig:flat204}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFlat_track370-electronic.png}
+\caption{Spectral Flatness}
+\label{fig:flat370}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFlat_track396-electronic.png}
+\caption{Spectral Flatness}
+\label{fig:flat396}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFlat_track463-metal.png}
+\caption{Spectral Flatness}
+\label{fig:flat463}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFlat_track492-metal.png}
+\caption{Spectral Flatness}
+\label{fig:flat492}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFlat_track547-rock.png}
+\caption{Spectral Flatness}
+\label{fig:flat547}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFlat_track550-rock.png}
+\caption{Spectral Flatness}
+\label{fig:flat550}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFlat_track729-world.png}
+\caption{Spectral Flatness}
+\label{fig:flat729}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFlat_track707-world.png}
+\caption{Spectral Flatness}
+\label{fig:flat707}
+\end{figure}
+
+
+
+\subsection{Flux}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFluxtrack201-classical.png}
+\caption{Spectral Flux}
+\label{fig:flux201}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFluxtrack204-classical.png}
+\caption{Spectral Flux}
+\label{fig:flux204}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFluxtrack370-electronic.png}
+\caption{Spectral Flux}
+\label{fig:flux370}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFluxtrack396-electronic.png}
+\caption{Spectral Flux}
+\label{fig:flux396}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFluxtrack463-metal.png}
+\caption{Spectral Flux}
+\label{fig:flux463}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFluxtrack492-metal.png}
+\caption{Spectral Flux}
+\label{fig:flux492}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFluxtrack547-rock.png}
+\caption{Spectral Flux}
+\label{fig:flux547}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFluxtrack550-rock.png}
+\caption{Spectral Flux}
+\label{fig:flux550}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFluxtrack729-world.png}
+\caption{Spectral Flux}
+\label{fig:flux729}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specFluxtrack707-world.png}
+\caption{Spectral Flux}
+\label{fig:flux707}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{melFilterBank.png}
+\caption{Mel Filter Bank}
+\label{fig:melBank}
+\end{figure}
 
 \clearpage
 \section{Code}
@@ -796,6 +991,11 @@ $\mathbf{fbank(p,:)}$ contains the filter bank $H_p$.
 \lstinputlisting[caption=centroidSpread.m,language=MATLAB,numbers=left]{./centroidSpread.m}
 \lstinputlisting[caption=centroidPlot.m,language=MATLAB,numbers=left]{./centroidPlot.m}
 
+\lstinputlisting[caption=specFlat.m,language=MATLAB,numbers=left]{./specFlat.m}
+\lstinputlisting[caption=specFlux.m,language=MATLAB,numbers=left]{./specFlux.m}
+\lstinputlisting[caption=specPlot.m,language=MATLAB,numbers=left]{./specPlot.m}
+
 \lstinputlisting[caption=melBank.m,language=MATLAB,numbers=left]{./melBank.m}
+\lstinputlisting[caption=mfcc.m,language=MATLAB,numbers=left]{./mfcc.m}
 
 \end{document}

@@ -24,3 +24,4 @@ figure(11)
 zeroCross('track707-world.wav');
 figure(12)
 zeroCross('track729-world.wav');
+close all;

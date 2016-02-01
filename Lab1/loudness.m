@@ -3,7 +3,7 @@ function [ loudness_data ] = loudness( filename,varargin )
 %into frames of size 255 loudness(filename,[franeSize,time,plotBool])
 %   The standard deviation of the original audio signal x[n] computed over
 %   a frame of size N provides a sense of the loudness
-% 
+%
 %   frameSize = size of frame to compute loudness over; defaults to 255
 %   time = duration of song to analyze; defaults to 24 seconds
 %   plotBool = whether or not to plot results; default is true
@@ -39,4 +39,3 @@ if plotBool==1
     saveas(p,['Loudness_' filename(1:end-4) '.png']);
 end
 end
-
