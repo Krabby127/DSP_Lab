@@ -402,6 +402,10 @@ $\mathbf{fbank(p,:)}$ contains the filter bank $H_p$.
 With a proper filter bank created, we are one step closer to categorizing music into genres. Now that we are using a Mel scale, hopefully we will be able to categorize the pitches
 more closely to how a human ear would hear them. As opposed to a computer simply processing raw data. 
 
+\lstinputlisting[caption=melBank.m,language=MATLAB,numbers=left,lastline=36]{./melBank.m}
+In addition to having a working filter bank, we also have our Mel-coefficients. These may prove useful in future labs this semester. 
+\lstinputlisting[caption=mfcc.m,language=MATLAB,numbers=left]{./mfcc.m}
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{melFilterBank.png}
