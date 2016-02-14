@@ -4,7 +4,6 @@ function [ mfccp ] = mfcc( fbank,Xn )
 %   p = 1,...,NB
 [b,~]=size(fbank);
 [~,d]=size(Xn);
-% fbank=fbank./max(fbank,2);
 mfccp=zeros(b,d);
 for i=1:d % frames
     for j=1:b % banks
