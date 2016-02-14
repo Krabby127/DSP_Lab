@@ -33,6 +33,7 @@
 \usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
 % These packages are all incorporated in the memoir class to one degree or another...
 \usepackage{mcode}
+\usepackage{lstlinebgrd}
 %%% HEADERS & FOOTERS
 \usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
 \pagestyle{fancy} % options: empty , plain , fancy
@@ -86,5 +87,33 @@ for each amplitude level, measured in dB, from -20 to 60 dB. You will normalize 
 \end{enumerate}
 \end{framed}
 
+\section{Rhythm}
+Rhythm can be defined as the presence of repetitive patterns of movement or sound. In this lab, we will be using several techniques to detect the presence
+of rhythm in an audio track.
+
+Extending from Lab1, we slightly modify our function that computes the \textbf{mfcc} coefficients in order to add a non-linearity. 
+
+
+
+
+\clearpage
+\appendix
+
+\section{Code}
+
+\lstinputlisting[caption=mfcc.m,language=MATLAB,numbers=left]{./mfcc.m}
+\lstinputlisting[caption=spectrumHistogram.m,language=MATLAB,numbers=left]{./spectrumHistogram.m}
+
+
+
+
+
+
+
+
+
+
+
+\lstinputlisting[caption=buildReport.m,language=MATLAB,numbers=left]{./buildReport.m}
 
 \end{document}
