@@ -3,15 +3,17 @@ function [ soundExtract,p ] = extractSound( filename, time)
 %   Write a MATLAB function that extract T seconds of music from a
 %   given track. You will use the MATLAB function audioread to
 %   read a track and the function play to listen to the track.
-narginchk(1, 3);
+narginchk(1, 2);
 if(nargin == 1)
     time = 24;
 end
 info = audioinfo(filename);
-[song,~]=audioread(filename);
+song=audioread(filename);
 if time >= info.Duration
     soundExtract=song;
-    p=audioplayer(soundExtract,info.SampleRate);
+    if(nargout == 2)
+        p=audioplayer(soundExtract,info.SampleRate);
+    end
     return;
 elseif time<= 1/info.SampleRate
     error('Too small of a time to sample');

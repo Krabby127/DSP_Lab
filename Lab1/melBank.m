@@ -1,14 +1,14 @@
-function [ fbank ] = melBank(  )
+function [ fbank ] = melBank(~)
 %melBank Creates a set of mel filter banks
 %   Implement the computation of the triangular filterbanks
 %   Hp, p = 1,...,NB. Your function will return an array fbank of size
 %   NB x K such that fbank(p,:) contains the filter bank Hp.
-close all;
-nbanks = 40; %% Number of Mel frequency bands
+
+nbanks = 40; % Number of Mel frequency bands
 % linear frequencies
 N=512;
 K=N/2+1;
-fbank=zeros(nbanks,K);
+% fbank=zeros(nbanks,K);
 fs=11025;
 linFrq = 20:fs/2;
 % mel frequencies
@@ -22,36 +22,49 @@ for i=1:nbanks+2
     [~, indx] = min(abs(melFrq - melIdx(i)));
     melIdx2Frq(i) = linFrq(indx);
 end
-melTemp=zeros(nbanks,max(melIdx2Frq));
+
+% map frequency banks
+fbank_freq = linspace(0,floor(fs/2),K);
+
+fbank=zeros(nbanks,K);
 % Implement equation for mel filters
 for i = 2:nbanks+1
-    currMel = melIdx2Frq(i);
-    nextMel = melIdx2Frq(i+1);
-    lastMel = melIdx2Frq(i-1);
-    A=(2/(nextMel-lastMel));
-    melDex=lastMel:currMel;
-    melTemp(i-1,melDex)=A.*(melDex-lastMel)./(currMel-lastMel);
-    melDex=currMel:nextMel;
-    melTemp(i-1,melDex)=A.*(nextMel-melDex)./(nextMel-currMel);
+    range=2/(melIdx2Frq(i+1)-melIdx2Frq(i-1));
+    for j=1:K
+        filt_val=range;
+        if(fbank_freq(j) <= melIdx2Frq(i)) ...
+                && (fbank_freq(j) > melIdx2Frq(i-1))
+            filt_val = filt_val*((fbank_freq(j) -melIdx2Frq(i-1)) ...
+                /(melIdx2Frq(i) - melIdx2Frq(i-1)));
+            fbank(i-1,j) = filt_val;
+            
+        elseif(fbank_freq(j) < melIdx2Frq(i+1)) ...
+                && (fbank_freq(j) >= melIdx2Frq(i))
+            filt_val = filt_val*((melIdx2Frq(i+1) - fbank_freq(j))...
+                /(melIdx2Frq(i+1) - melIdx2Frq(i)));
+            fbank(i-1,j) = filt_val;
+        else
+            fbank(i-1,j)=0;
+        end
+    end
 end
 
-W = round(linspace(1,max(melIdx2Frq),K));
-for i = 1:nbanks
-    fbank(i,:) = melTemp(i,W);
+for i=1:nbanks
+    norm=sum(fbank(i,:));
+    for j=1:K
+        fbank(i,j)=fbank(i,j)/norm;
+    end
 end
-figure
-plot(melTemp.');
-title('Mel Filter Bank');
-xlabel('Frequency (Hz)');
-ylabel('Filter Magnitude');
-xlim([0,length(melTemp)]);
-saveas(gca,'melFilterBank.png');
-% for i = 1:nbanks
-%     disp(['fbank(',num2str(i),') = ',num2str(sum(fbank(i,:)))]);
-% end
-% 
-% for i = 1:nbanks
-%     disp(['melTemp(',num2str(i),') = ',num2str(sum(melTemp(i,:)))]);
-% end
-close all;
+
+if(nargin)
+    close all;
+    figure
+    plot(fbank.');
+    title('Mel Filter Bank');
+    xlabel('Frequency (Hz)');
+    ylabel('Filter Magnitude');
+    xlim([0,length(fbank)]);
+    saveas(gca,'melFilterBank.png');
+    close all;
+end
 end
