@@ -1,9 +1,9 @@
-function [ mfccp ] = mfcc( filename )
+function [ mfccp ] = mfcc( fbank,Xn )
 %mfcc Compute the Mel frequency coeffecients
 %   The mel-spectrum (MFCC) coefficient of the n-th frame is defined for 
 %   p = 1,...,NB
-fbank = melBank();
-Xn = freqDist( filename );
+% fbank = melBank();
+% Xn = freqDist( filename );
 [a,b]=size(fbank);
 fbank=fbank./max(fbank,2);
 mfccp=zeros(a,b);

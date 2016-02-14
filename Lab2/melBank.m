@@ -1,4 +1,4 @@
-function [ fbank ] = melBank(  )
+function [ fbank ] = melBank(~)
 %melBank Creates a set of mel filter banks
 %   Implement the computation of the triangular filterbanks
 %   Hp, p = 1,...,NB. Your function will return an array fbank of size
@@ -39,13 +39,16 @@ W = round(linspace(1,max(melIdx2Frq),K));
 for i = 1:nbanks
     fbank(i,:) = melTemp(i,W);
 end
-figure
-plot(melTemp.');
-title('Mel Filter Bank');
-xlabel('Frequency (Hz)');
-ylabel('Filter Magnitude');
-xlim([0,length(melTemp)]);
-saveas(gca,'melFilterBank.png');
+if(nargin)
+    figure
+    plot(fbank.');
+    title('Mel Filter Bank');
+    xlabel('Frequency (Hz)');
+    ylabel('Filter Magnitude');
+    xlim([0,length(fbank)]);
+    saveas(gca,'melFilterBank.png');
+%     close all;
+end
 % for i = 1:nbanks
 %     disp(['fbank(',num2str(i),') = ',num2str(sum(fbank(i,:)))]);
 % end
@@ -53,5 +56,5 @@ saveas(gca,'melFilterBank.png');
 % for i = 1:nbanks
 %     disp(['melTemp(',num2str(i),') = ',num2str(sum(melTemp(i,:)))]);
 % end
-% close all;
+close all;
 end

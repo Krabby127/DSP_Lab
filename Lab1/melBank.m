@@ -53,5 +53,5 @@ saveas(gca,'melFilterBank.png');
 % for i = 1:nbanks
 %     disp(['melTemp(',num2str(i),') = ',num2str(sum(melTemp(i,:)))]);
 % end
-% close all;
+close all;
 end
