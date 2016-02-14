@@ -1,6 +1,9 @@
 function [Xn] = windows( filename, window )
 %windows Implement the computation of the windowed Fourier transform of y
 frameSize=512;
+if(nargin == 1)
+    window = 3;
+end
 switch window
     case 1
         w=bartlett(frameSize); % Bartlett window
@@ -12,7 +15,7 @@ switch window
         w=kaiser(frameSize,0.5); % defaults to Kaiser window
 end
 [x,~]=extractSound(filename,24);
-xn=buffer(x,frameSize);
+xn=buffer(x,frameSize,frameSize/2);
 Y=zeros(size(xn));
 for i=1:length(xn)
     Y(:,i)=fft(xn(:,i).*w);

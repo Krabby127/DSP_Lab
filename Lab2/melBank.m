@@ -39,6 +39,7 @@ W = round(linspace(1,max(melIdx2Frq),K));
 for i = 1:nbanks
     fbank(i,:) = melTemp(i,W);
 end
+% fbank=melTemp;
 if(nargin)
     figure
     plot(fbank.');
