@@ -243,7 +243,9 @@ Equation \ref{eq:ARLm} can be represented in MATLAB with Listing  \ref{ls:ARLm} 
 
 \lstinputlisting[caption=rhythmVar.m,language=MATLAB,numbers=left,label=ls:ARLm]{./rhythmVar.m} 
 
-S
+Figure \ref{fig:rhythmVar396} shows an example of a song segment's rhythmic variation. My implementation, while currently incorrect, would provide useful information
+if it were right. Figure \ref{fig:rhythmVar396} shows an extremely quick song. All of the successive frames barely lag behind one another, meaning that they are extremely
+similar. Any rhythm would have to be occurring one after another. 
 The remaining figures can be found in Appendix \ref{sec:rhythmVar}. 
 
 \begin{figure}[H]
@@ -254,6 +256,54 @@ The remaining figures can be found in Appendix \ref{sec:rhythmVar}.
 \end{figure}
 
 %--------------------------------------%
+\section{Tonality and Chroma}
+\subsection{The Equal-Tempered Scale}
+Now that we have adequately explored the rhythmic aspect of a musical piece, it is time to look at the tonal portion of our music. 
+
+\subsection{Chroma}
+The chroma is associated with the relative position of a note inside an octave. It is a relative measurement that is independent of the absolute pitch. 
+
+We define a \emph{Pitch Class Profile} associated with the note, or chroma $c=0,\dots,11$ as the weighted sum of all the peak frequencies that are mapped
+to the note c, irrespective of the octave they fall in. 
+
+
+\begin{equation}
+\label{eq:PCP}
+\begin{aligned}
+PCP(c)=\sum \limits_k w(k,c) |X_n(k)|^2\\
+\text{where } k \text{ is such that } c=\text{round}(12 \log_2(f_k/f_0)) \mod12
+\end{aligned}
+\end{equation}
+
+and the weight $w(k,c)$ is given by
+
+\begin{equation}
+\label{eq:wkc}
+w(k,c)=
+\begin{cases}
+\cos^2(\pi r/2) &\mbox{if } -1<r=12 \log_2(f_k/f_0)-sm<1,\\
+&\mbox{where }c=sm \mod(12), \text{ and } sm=\text{round}(12 \log_2(f_k/f_0)),\\[2ex]
+0& \mbox{otherwise}
+\end{cases}
+\end{equation}
+ 
+We want our definition of chroma to be independent of the loudness of the music. We therefore need to normalize each PCP by the total PCP computed over all the semitones. 
+The normalized pitch class profile (NPCP) is defined by
+
+\begin{equation}
+\label{eq:NPCP}
+\text{NPCP}(c)=\frac{PCP(c)}{\sum\limits_{q=1}^{11}PCP(q)}
+\end{equation}
+
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{7}
+\item Implement the computation of the Normalized Pitch Class Profile, defined by Equation \ref{eq:NPCP}. You will compute a vector of 12 entries for each frame n.
+\item Evaluate and plot the NPFP for the 12 audio tracks supplied for the first lab. 
+\end{enumerate}
+\end{framed}
 
 \clearpage
 \appendix
@@ -727,12 +777,14 @@ The remaining figures can be found in Appendix \ref{sec:rhythmVar}.
 \clearpage
 \section{Code}
 
+\lstinputlisting[caption=freqDist.m,language=MATLAB,numbers=left]{./freqDist.m}
 \lstinputlisting[caption=mfcc.m,language=MATLAB,numbers=left]{./mfcc.m}
 \lstinputlisting[caption=spectrumHistogram.m,language=MATLAB,numbers=left]{./spectrumHistogram.m}
 \lstinputlisting[caption=simMatrix.m,language=MATLAB,numbers=left]{./simMatrix.m}
 \lstinputlisting[caption=rhythmIndex.m,language=MATLAB,numbers=left]{./rhythmIndex.m}
 \lstinputlisting[caption=autoC.m,language=MATLAB,numbers=left]{./autoC.m}
 \lstinputlisting[caption=rhythmVar.m,language=MATLAB,numbers=left]{./rhythmVar.m} 
+\lstinputlisting[caption=normPCP.m,language=MATLAB,numbers=left]{./normPCP.m} 
 
 
 

@@ -2,6 +2,7 @@ function [ ARm ] = rhythmVar( filename,~ )
 %autoC Computes the autocorrelation of a song
 %   In general, if two frames i and j are similar, we can find out
 %   if they are repeated later in the segment, at time j+l
+%   For the sake of this lab, we will be processing 20 frames (~1 second)
 sim = simMatrix( filename);
 [len,~]=size(sim);
 ARm=zeros(20,floor(len/20));
@@ -25,8 +26,8 @@ if(nargin==2)
     xAxis=linspace(0,15,len);
     imagesc(xAxis,yAxis,ARm);
     ax=gca;
-    ax.YTickLabel=flipud(['0.0'; '0.1'; '0.2' ;'0.3'; '0.4'; '0.5'; '0.6'; '0.7'; '0.8'; ...
-        '0.9'; '1.0']);
+    ax.YTickLabel=flipud(['0.0'; '0.1'; '0.2' ;'0.3'; '0.4'; '0.5'; ...
+        '0.6'; '0.7'; '0.8'; '0.9'; '1.0']);
     title({'Autocorrelation AR(l,m):'; filename});
     xlabel('Time (secs)');
     ylabel('Lag (secs)');
