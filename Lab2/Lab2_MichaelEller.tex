@@ -71,8 +71,8 @@
 \begin{document}
 \maketitle
 
-%\tableofcontents
-%\clearpage
+\tableofcontents
+\clearpage
 \section{Introduction}
 In the first lab, we explored some of the many techniques used in audio industry to organize and search through music by content. We developed identifiers to
 attach to the music such as its loudness and frequency distribution. In this lab, we will be classifying tracks according to the identifiers developed in the first lab. 
@@ -177,7 +177,7 @@ As can be seen in Figure \ref{fig:rhy396}, There is a very periodic pattern thro
 at the underlying subdivision of the beat. This makes sense for track 396, as it has a very repetitive thumping bass line throughout the song. The spikes on the left
 side of the graph are more akin to faster notes while slower notes are represented further right. 
 
-
+%--------------------------------------%
 \subsection{A Better Estimate of the Rhythm}
 Rather than compounding the similarity between frames that are at a fixed lag apart in time, we can try to detect more interesting patterns in the similarity matrix. 
 In addition to knowing the similarity between two frames, we would also like to know if this similarity is repeated later in the segment, at time j+l. 
@@ -188,11 +188,22 @@ The autocorrelation of frames can be defined as:
 AR(l)= \frac{1}{N_f(N_f-l)} \sum\limits_{i=1}^{N_f}  \sum\limits_{j=1}^{N_f-l} S(i,j)S(i,j+l), \quad l=0,\dots,N_f-1
 \end{equation}
 
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{5}
+\item Implement the computation of the rhythm index $AR(l)$ defined in Equation \ref{eq:autoc}. Plot the vector $AR$ as a function of the lag $l=0,N_f-1$ for the 12 tracks.
+Comment on the presence, or absence, of a strong rhythmic pattern.
+\end{enumerate}
+\end{framed}
+
 Equation \ref{eq:autoc} can be represented in MATLAB with Listing  \ref{ls:autoC} below. 
 
 \lstinputlisting[caption=AutoC.m,language=MATLAB,numbers=left,label=ls:autoC]{./AutoC.m} 
 
-The plot for the autocorrelation of track396-electronic.wav can be seen in Figure \ref{fig:auto396}
+The plot for the autocorrelation of track396-electronic.wav can be seen in Figure \ref{fig:auto396} below. The plot of the autocorrelation is strikingly similar to the plots for the 
+rhythm index, B(l). At this point in analysis, the better choice would be whichever method is faster. 
+The remaining figures can be found in Appendix \ref{sec:autocfig}. 
 
 \begin{figure}[H]
 \centering
@@ -200,6 +211,30 @@ The plot for the autocorrelation of track396-electronic.wav can be seen in Figur
 \caption{Autocorrelation 396}
 \label{fig:auto396}
 \end{figure}
+
+%--------------------------------------%
+\subsection{Rhythmic Variations over Time}
+
+Here we are interested in studying the dynamic changes in the rhythm. For this purpose, we consider short times windows formed by 20 frames (approximately 1 second)
+over which we compute a vector $AR$ of size 20. 
+
+\begin{equation}
+\label{eq:ARLm}
+\begin{aligned}
+AR(l,m)= \frac{1}{20(20-l)} \sum\limits_{i=1}^{20}  \sum\limits_{j=1}^{20-l} S(i+m*20,j+m*20)S(i+m*20,j+m*20+l)\\
+\text{for }  l=0,\dots,19, \quad \text{and } m=0,\dots,N_f/20-1
+\end{aligned}
+\end{equation}
+
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{6}
+\item Implement the computation of the rhythm index $AR(l,m)$ defined in Equation \ref{eq:ARLm}. Plot the image $AR$ in false colors as a
+function of the lag $l=0,\dots,19$ (y-axis) and the time window index $m$ (x-axis) for the 12 tracks. Comment on the rhythm patterns for the different tracks. 
+\end{enumerate}
+\end{framed}
 
 
 %--------------------------------------%
