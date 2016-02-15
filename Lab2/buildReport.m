@@ -1,5 +1,5 @@
 %build everything necessary for report
-clear Xk fbank filename mfccp specHistogram mfcc;
+clear Xk fbank filename mfccp specHistogram mfcc sim ARm NPCP;
 close all;
 fileArray = cellstr([
     'track201-classical.wav '; ...
@@ -25,4 +25,5 @@ parfor i=1:12
     rhythmIndex(filename,1);
     autoC(filename,1);
     ARm=rhythmVar( filename,1);
+    NPCP=normPCP(filename,1);
 end
