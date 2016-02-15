@@ -15,7 +15,7 @@ fileArray = cellstr([
     'track707-world.wav     '; ...
     'track729-world.wav     '
     ]);
-fbank=melBank(1);
+fbank=melBank();
 parfor i=1:12
     filename=['' fileArray{i} '']
     Xk=freqDist(filename);
@@ -24,4 +24,5 @@ parfor i=1:12
     sim=simMatrix(filename,1);
     rhythmIndex(filename,1);
     autoC(filename,1);
+    ARm=rhythmVar( filename,1);
 end

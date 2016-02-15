@@ -24,6 +24,9 @@ if(nargin==2)
     yAxis=linspace(0,1,11);
     xAxis=linspace(0,15,len);
     imagesc(xAxis,yAxis,ARm);
+    ax=gca;
+    ax.YTickLabel=flipud(['0.0'; '0.1'; '0.2' ;'0.3'; '0.4'; '0.5'; '0.6'; '0.7'; '0.8'; ...
+        '0.9'; '1.0']);
     title({'Autocorrelation AR(l,m):'; filename});
     xlabel('Time (secs)');
     ylabel('Lag (secs)');
