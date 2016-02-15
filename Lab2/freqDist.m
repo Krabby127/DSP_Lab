@@ -1,4 +1,4 @@
-function [ Xk ] = freqDist( filename )
+function [ Xk ] = freqDist(filename)
 %freqDist Computes the frequency distribution
 % info=audioinfo(filename);
 song=extractSound(filename);

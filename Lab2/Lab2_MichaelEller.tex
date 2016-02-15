@@ -76,6 +76,8 @@
 \section{Introduction}
 In the first lab, we explored some of the many techniques used in audio industry to organize and search through music by content. We developed identifiers to
 attach to the music such as its loudness and frequency distribution. In this lab, we will be classifying tracks according to the identifiers developed in the first lab. 
+Since many of the calculations were operating independently for each frame, parallelizing the process using MATLAB's \mcode{parfor} function, we are able
+to divide the processes unto multiple threads. Personally, this reduced my computation times by 50\%, despite parallelization overhead. 
 
 \begin{framed}
 \textbf{Assignment}
@@ -91,18 +93,504 @@ for each amplitude level, measured in dB, from -20 to 60 dB. You will normalize 
 Rhythm can be defined as the presence of repetitive patterns of movement or sound. In this lab, we will be using several techniques to detect the presence
 of rhythm in an audio track.
 
-Extending from Lab1, we slightly modify our function that computes the \textbf{mfcc} coefficients in order to add a non-linearity. 
+\subsection{Spectrum Histogram}
+Extending from Lab1, we slightly modify our function that computes the \textbf{mfcc} coefficients in order to add a non-linearity. We will, however, only be using
+this nonlinear \textbf{mfcc} function in calculating the spectrum histograms. 
+
+\lstinputlisting[caption=mfcc.m,language=MATLAB,numbers=left]{./mfcc.m}
+
+In order to better visualize the \textbf{mfcc} output, we create a \emph{spectrum histogram} which maps each mfcc index and the corresponding amplitude levels
+to a color displaying how often each mfcc index occured at the respective volume. For example, in Figure \ref{fig:hist201_1}, aside from the very low sounds, most
+of the pitches were at around the same volume. It is interesting to note in Figure \ref{fig:hist370} in Appendix \ref{sec:specHis}, 
+there is a high concentration at the lower left corner. This makes sense though.The song has practically no bass to it, and the Spectrum Histogram reflects that. 
+There should also exist a high similarity along the main diagonal, as a frame is completely similar to itself. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{specHistogram201-classical.png}
+\caption{Spectrum Histogram 201}
+\label{fig:hist201_1}
+\end{figure}
+
+\subsection{Similarity Matrix}
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{3}
+\item Implement the computation of the similarity matrix, and display the similarity matrices (color-coded) for the 12 audio tracks supplied for the first lab. 
+\end{enumerate}
+\end{framed}
+
+The accompanying code and figure for the similarity matrix for "track201-classical.wav" can be seen below. The remaining figures can be found in Appendix \ref{sec:Sim}.
+
+\lstinputlisting[caption=simMatrix.m,language=MATLAB,numbers=left]{./simMatrix.m}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{SimMatrix201-classical.png}
+\caption{Similarity Matrix 201}
+\label{fig:sim201}
+\end{figure}
+
+The first stage involves computing a similarity matrix defined as follows
+
+\begin{equation}
+\label{eq:sim}
+S(i,j) = \frac{\langle \text{mfcc}(:,i), \text{mfcc}(:,j) \rangle }{||\text{mfcc}(:,i) || \,  ||\text{mfcc}(:,j) ||} = 
+\sum\limits_{k=1}^{\text{nbanks}} \frac{\text{mfcc}(k,i)\  \text{mfcc}(k,j)}{||\text{mfcc}(:,i) || \,  ||\text{mfcc}(:,j) ||}
+\end{equation}
+
+Currently the similarity matrices are not quite correct. While they do possess all the correct features in that they are symmetrical, their outputs do not make sense. 
+According to my function, every frame appears extremely similar. With an ideal function, one would be able to see \emph{hotspots} on the map, corresponding to
+longer notes, with the size of each hotspot being inversely proportional to the speed of the rhythmic progression. Using Figure \ref{fig:sim201} as an example, 
+it would imply that near the beginning of the piece there is a general rhythmic pattern. But as the piece progresses past the 300\textsuperscript{th} frame, the similarity
+drastically decreases. The musical equivalent of this would be the piece has sped up insanely fast and now there is a different pitch almost every $\frac{1}{f_s\times 255}$
+(~0.0231) seconds. This would imply that there were up to 43 new pitches every second. 
+
+\subsection{A first Estimate of the Rhythm}
+Once we note that the entries in our similarity matrix are always at a distance of l frames, we are able to better quantify the rhythm by creating a rhythm index, defined
+by Equation \ref{eq:rhy}.
+
+\begin{equation}
+\label{eq:rhy}
+B(l)=\frac{1}{N_f-l} \sum\limits_{n=1}^{N_f-l}  S(n,n+l), \quad l=0,\dots N_f -1
+\end{equation}
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{4}
+\item Implement the computation of the rhythm index $B(l)$ defined in Equation \ref{eq:rhy}. Plot the vector B as a function of the lag $l=0,N_f -1$  for the 12 tracks. 
+Comment on the presence, or absence, of a strong rhythmic pattern. \\
+Hint: to debug your function, you can use track-396 which should display strong rhythmic structure. 
+\end{enumerate}
+\end{framed}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{RhythmIndex396-electronic.png}
+\caption{Rhythm Index 396}
+\label{fig:rhy396}
+\end{figure}
+
+As can be seen in Figure \ref{fig:rhy396}, There is a very periodic pattern throughout the song. The periodicity of the graph in Figure \ref{fig:rhy396} may hint
+at the underlying subdivision of the beat. This makes sense for track 396, as it has a very repetitive thumping bass line throughout the song. The spikes on the left
+side of the graph are more akin to faster notes while slower notes are represented further right. 
 
 
+\subsection{A Better Estimate of the Rhythm}
+Rather than compounding the similarity between frames that are at a fixed lag apart in time, we can try to detect more interesting patterns in the similarity matrix. 
+In addition to knowing the similarity between two frames, we would also like to know if this similarity is repeated later in the segment, at time j+l. 
+The autocorrelation of frames can be defined as:
 
+\begin{equation}
+\label{eq:autoc}
+AR(l)= \frac{1}{N_f(N_f-l)} \sum\limits_{i=1}^{N_f}  \sum\limits_{j=1}^{N_f-l} S(i,j)S(i,j+l), \quad l=0,\dots,N_f-1
+\end{equation}
+
+Equation \ref{eq:autoc} can be represented in MATLAB with Listing  \ref{ls:autoC} below. 
+
+\lstinputlisting[caption=AutoC.m,language=MATLAB,numbers=left,label=ls:autoC]{./AutoC.m} 
+
+The plot for the autocorrelation of track396-electronic.wav can be seen in Figure \ref{fig:auto396}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{AutoC396-electronic.png}
+\caption{Autocorrelation 396}
+\label{fig:auto396}
+\end{figure}
+
+
+%--------------------------------------%
 
 \clearpage
 \appendix
+%--------------------------------------%
+\section{Figures}
+\subsection{Spectrum Histogram}
+\label{sec:specHis}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specHistogram201-classical.png}
+\caption{Spectrum Histogram 201}
+\label{fig:hist201}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specHistogram204-classical.png}
+\caption{Spectrum Histogram 204}
+\label{fig:hist204}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specHistogram370-electronic.png}
+\caption{Spectrum Histogram 370}
+\label{fig:hist370}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specHistogram396-electronic.png}
+\caption{Spectrum Histogram 396}
+\label{fig:hist396}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specHistogram437-jazz.png}
+\caption{Spectrum Histogram 437}
+\label{fig:hist437}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specHistogram439-jazz.png}
+\caption{Spectrum Histogram 439}
+\label{fig:hist439}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specHistogram463-metal.png}
+\caption{Spectrum Histogram 463}
+\label{fig:hist463}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specHistogram492-metal.png}
+\caption{Spectrum Histogram 492}
+\label{fig:hist492}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specHistogram547-rock.png}
+\caption{Spectrum Histogram 547}
+\label{fig:hist547}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specHistogram550-rock.png}
+\caption{Spectrum Histogram 550}
+\label{fig:hist550}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specHistogram707-world.png}
+\caption{Spectrum Histogram 707}
+\label{fig:hist707}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{specHistogram729-world.png}
+\caption{Spectrum Histogram 729}
+\label{fig:hist729}
+\end{figure}
+\clearpage
+
+
+
+
+
+%--------------------------------------%
+
+\subsection{Similarity Matrix}
+\label{sec:Sim}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{SimMatrix201-classical.png}
+\caption{Similarity Matrix 201}
+\label{fig:sim201_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{SimMatrix204-classical.png}
+\caption{Similarity Matrix 204}
+\label{fig:sim204_1}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{SimMatrix370-electronic.png}
+\caption{Similarity Matrix 370}
+\label{fig:sim370_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{SimMatrix396-electronic.png}
+\caption{Similarity Matrix 396}
+\label{fig:sim396_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{SimMatrix437-jazz.png}
+\caption{Similarity Matrix 437}
+\label{fig:sim437_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{SimMatrix439-jazz.png}
+\caption{Similarity Matrix 439}
+\label{fig:sim439_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{SimMatrix463-metal.png}
+\caption{Similarity Matrix 463}
+\label{fig:sim463_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{SimMatrix492-metal.png}
+\caption{Similarity Matrix 492}
+\label{fig:sim492_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{SimMatrix547-rock.png}
+\caption{Similarity Matrix 547}
+\label{fig:sim547_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{SimMatrix550-rock.png}
+\caption{Similarity Matrix 550}
+\label{fig:sim550_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{SimMatrix707-world.png}
+\caption{Similarity Matrix 707}
+\label{fig:sim707_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{SimMatrix729-world.png}
+\caption{Similarity Matrix 729}
+\label{fig:sim729_1}
+\end{figure}
+
+
+
+
+
+%--------------------------------------%
+
+\subsection{Rhythm Index}
+\label{sec:rhythmFig}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{RhythmIndex201-classical.png}
+\caption{Rhythm Index 201}
+\label{fig:rhy201_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{RhythmIndex204-classical.png}
+\caption{Rhythm Index 204}
+\label{fig:rhy204_1}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{RhythmIndex370-electronic.png}
+\caption{Rhythm Index 370}
+\label{fig:rhy370_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{RhythmIndex396-electronic.png}
+\caption{Rhythm Index 396}
+\label{fig:rhy396_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{RhythmIndex437-jazz.png}
+\caption{Rhythm Index 437}
+\label{fig:rhy437_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{RhythmIndex439-jazz.png}
+\caption{Rhythm Index 439}
+\label{fig:rhy439_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{RhythmIndex463-metal.png}
+\caption{Rhythm Index 463}
+\label{fig:rhy463_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{RhythmIndex492-metal.png}
+\caption{Rhythm Index 492}
+\label{fig:rhy492_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{RhythmIndex547-rock.png}
+\caption{Rhythm Index 547}
+\label{fig:rhy547_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{RhythmIndex550-rock.png}
+\caption{Rhythm Index 550}
+\label{fig:rhy550_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{RhythmIndex707-world.png}
+\caption{Rhythm Index 707}
+\label{fig:rhy707_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{RhythmIndex729-world.png}
+\caption{Rhythm Index 729}
+\label{fig:rhy729_1}
+\end{figure}
+\clearpage
+
+
+
+%--------------------------------------%
+\subsection{Autocorrelation}
+\label{sec:autocfig}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{AutoC201-classical.png}
+\caption{Autocorrelation 201}
+\label{fig:auto201_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{AutoC204-classical.png}
+\caption{Autocorrelation 204}
+\label{fig:auto204_1}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{AutoC370-electronic.png}
+\caption{Autocorrelation 370}
+\label{fig:auto370_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{AutoC396-electronic.png}
+\caption{Autocorrelation 396}
+\label{fig:auto396_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{AutoC437-jazz.png}
+\caption{Autocorrelation 437}
+\label{fig:auto437_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{AutoC439-jazz.png}
+\caption{Autocorrelation 439}
+\label{fig:auto439_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{AutoC463-metal.png}
+\caption{Autocorrelation 463}
+\label{fig:auto463_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{AutoC492-metal.png}
+\caption{Autocorrelation 492}
+\label{fig:auto492_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{AutoC547-rock.png}
+\caption{Autocorrelation 547}
+\label{fig:auto547_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{AutoC550-rock.png}
+\caption{Autocorrelation 550}
+\label{fig:auto550_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{AutoC707-world.png}
+\caption{Autocorrelation 707}
+\label{fig:auto707_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{AutoC729-world.png}
+\caption{Autocorrelation 729}
+\label{fig:auto729_1}
+\end{figure}
+\clearpage
+
+
+
+%--------------------------------------%
+\clearpage
 \section{Code}
 
 \lstinputlisting[caption=mfcc.m,language=MATLAB,numbers=left]{./mfcc.m}
 \lstinputlisting[caption=spectrumHistogram.m,language=MATLAB,numbers=left]{./spectrumHistogram.m}
+\lstinputlisting[caption=simMatrix.m,language=MATLAB,numbers=left]{./simMatrix.m}
+\lstinputlisting[caption=rhythmIndex.m,language=MATLAB,numbers=left]{./rhythmIndex.m}
+\lstinputlisting[caption=autoC.m,language=MATLAB,numbers=left]{./autoC.m}
 
 
 
