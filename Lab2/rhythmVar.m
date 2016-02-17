@@ -32,7 +32,8 @@ if(nargin==2)
     xlabel('Time (secs)');
     ylabel('Lag (secs)');
     colormap 'jet';
+    colorbar;
     saveas(gca,['RhythmVar' filename(6:end-4) '.png']);
-    close(h);
+%     close(h);
 end
 end

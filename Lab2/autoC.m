@@ -25,7 +25,7 @@ if(nargin==2)
     xlabel('Lag (secs)');
     ylabel('Autocorrelation');
     saveas(gca,['AutoC' filename(6:end-4) '.png']);
-    close(h);
+%     close(h);
 end
 
 end

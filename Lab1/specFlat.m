@@ -3,15 +3,14 @@ function [ SFn ] = specFlat( filename )
 %   Spectral flatness is the ratio between the geometric and arithmetic
 %   means of the magnitude of the Fourier transform
 Xk=freqDist(filename);
-SFn=(geomean(Xk)./mean(Xk));
+SFn=(geomean(abs(Xk))./mean(abs(Xk)));
 
-close all;
-figure
+h=figure
 plot(SFn);
 title(['Spectral Flatness: "' filename '"']);
 xlabel('Frame Number');
 ylabel('Flatness');
 xlim([0,length(SFn)]);
 saveas(gca,['specFlat_' filename(1:end-4) '.png']);
-close all;
+close(h);
 end

@@ -19,7 +19,7 @@ if(nargin==2)
     xlabel('lag (frames)');
     ylabel('Presence of rhythmic period');
     saveas(gca,['RhythmIndex' filename(6:end-4) '.png']);
-    close(h);
+%     close(h);
 end
 end
 

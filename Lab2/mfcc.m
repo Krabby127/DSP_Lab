@@ -12,7 +12,7 @@ Xn=freqDist(filename);
 mfccp=zeros(nbank,d);
 
 fbank_norm=zeros(nbank,c);
-
+mfccp=(fbank*abs(freqDist(filename))).^2;
 %normalize the filter banks
 for i = 1:nbank
     norm = sum(fbank(i,:));
@@ -21,30 +21,17 @@ for i = 1:nbank
     end
 end
 
-%mel-spectrum coefficients
-for n=1:d % frames
-    mfcc_val=0;
-    for p=1:nbank % banks
-        for k=1:c
-            mfcc_val = mfcc_val + abs((fbank_norm(p,k)*Xn(k,n))^2);
-        end
-        mfccp(p,n)=mfcc_val;
-    end
-end
 
 % Lets us still use non-log mfcc
-if(nargin~=3)
-    mfccp=10*log(mfccp)/log(10);
+if(nargin==3)
+    mfccp=10*log10(mfccp);
     return;
 end
-for i=1:d
-    mfccp(:,i)=mfccp(:,i)/sum(mfccp(:,i));
-end
 
-for i=1:1034
-    if(round(sum(mfccp(:,i)),3)~= 1.000)
-        disp(i);
-        error('sum not 1');
-    end
-end
+% for i=1:1034
+%     if(round(sum(mfccp(:,i)),3)~= 1.000)
+%         disp(i);
+%         error('sum not 1');
+%     end
+% end
 end

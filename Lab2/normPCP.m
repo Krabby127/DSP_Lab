@@ -27,11 +27,7 @@ f0=27.5;
 % sm=zeros(size(freqVals));
 sm=round(12*log(freqVals/f0)/log(2));
 c=mod(sm,12);
-% for i=1:a*b
-%     if(isnan(c(i)))
-%         c(i)=0;
-%     end
-% end
+
 
 w=zeros(a,b,12);
 % k is the number of peaks
@@ -39,15 +35,9 @@ w=zeros(a,b,12);
 % n is the frame number
 % Weighting function, w, needs to be k*n*c large
 % will be a*n*12 large
-% r=12*log(freqVals/f0)-sm;
-% for n=1:b
-%     for k=1:a
-%         for c1=1:12
-%
-%
-%         end
-%     end
-% end
+r=12*log2(freqVals/f0)-sm;
+w=(cos(pi*r/2)).^2;
+
 PCP=zeros(b,12);
 c=c+1;
 for j=1:b
@@ -65,14 +55,14 @@ if(nargin==2)
     imagesc(PCP');
     ylim([1,12]);
     ax=gca;
-    ax.YTickLabel={'A ','A#','B ','C ','C#','D ','D#','E ',...
-        'F ','F#','G ','G#'};
+    ax.YTickLabel=fliplr({'A ','A#','B ','C ','C#','D ','D#','E ',...
+        'F ','F#','G ','G#'});
     colormap 'jet';
     title({'Chroma :'; filename});
     xlabel('frames');
     ylabel('Note');
     colorbar;
     saveas(gca,['NPCP' filename(6:end-4) '.png']);
-    close(h);
+%     close(h);
 end
 end
