@@ -9,11 +9,11 @@ x=extractSound(filename);
 s=abs(s);
 [a,b]=size(s);
 
-pks=zeros(a,b);
+% pks=zeros(a,b);
 locs=zeros(a,b);
 for i=1:b
     len=length(findpeaks(s(:,i)));
-    [pks(1:len,i),locs(1:len,i)]=findpeaks(s(:,i));
+    [~,locs(1:len,i)]=findpeaks(s(:,i));
 end
 freqVals=zeros(a,b);
 for i=1:a
@@ -28,23 +28,32 @@ f0=27.5;
 sm=round(12*log(freqVals/f0)/log(2));
 c=mod(sm,12);
 
+NumEl=numel(c);
+for i=1:NumEl
+    if(isnan(c(i)))
+        c(i)=0;
+    end
+end
 
-w=zeros(a,b,12);
 % k is the number of peaks
 % c is the chroma (A,A#,B,etc.)
 % n is the frame number
 % Weighting function, w, needs to be k*n*c large
-% will be a*n*12 large
+
 r=12*log2(freqVals/f0)-sm;
 w=(cos(pi*r/2)).^2;
 
 PCP=zeros(b,12);
 c=c+1;
+
+
 for j=1:b
     for i=1:12
         PCP(j,i)=sum(c(:,j)==i);
     end
 end
+
+
 
 for i=1:b
     PCP(i,:)=PCP(i,:)/sum(PCP(i,:));

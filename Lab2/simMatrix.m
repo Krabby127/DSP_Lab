@@ -21,7 +21,7 @@ parfor i=1:b %frame i
 end
 % sim(:)=sim(:)/max(sim(:));
 % ax=gca;
-sim=(sim+1)/2;
+% sim=(sim+1)/2;
 if(nargin == 2)
     h=figure;
     imagesc(sim);
@@ -29,7 +29,7 @@ if(nargin == 2)
     ylabel('Frame Number');
     title({'Similarity Matrix:'; filename});
     colorbar;
-    colormap 'jet';
+%     colormap 'jet';
     saveas(gca,['SimMatrix' filename(6:end-4) '.png']);
 %     close(h);
 end

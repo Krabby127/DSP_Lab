@@ -16,7 +16,7 @@ fileArray = cellstr([
     'track729-world.wav     '
     ]);
 fbank=melBank();
-parfor i=1:12
+parfor i=1:1    
     filename=['' fileArray{i} '']
     Xk=freqDist(filename);
     mfccp=mfcc(fbank, filename);
