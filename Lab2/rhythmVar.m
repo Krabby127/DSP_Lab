@@ -10,15 +10,17 @@ ARm=zeros(20,floor(len/20));
 for m=0:floor(len/20-1)
     Window = sim(20*m+1:20*(m+1),20*m+1:20*(m+1));
     for l=0:19
-        temp=Window*circshift(Window,-l);
-        ARm(l+1,m+1) = sum(sum(temp(1:20-l,:)))/(20*(20-l));
+        temp=Window.*circshift(Window,[0,-l]);
+        ARm(l+1,m+1) = sum(sum(temp(1:20-l,:)))/((20-l));
     end
 end
 
 
-for i=1:20
-    ARm(i,:)=ARm(i,:)/(max(ARm(i,:)));
-end
+ARm=ARm/20;
+
+% for i=1:20
+%     ARm(i,:)=ARm(i,:)/(max(ARm(i,:)));
+% end
 
 if(nargin==2)
     h=figure;
