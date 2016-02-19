@@ -25,13 +25,26 @@ for i=1:a
 end
 f0=27.5;
 % sm=zeros(size(freqVals));
-sm=round(12*log(freqVals/f0)/log(2));
+sm=round(12*log2(freqVals/f0));
+r=12*log2(freqVals/f0)-sm;
 c=mod(sm,12);
+% c=c+1;
+[D,B]=size(c); % 257,1032
+w=zeros(D,12,B);
 
-NumEl=numel(c);
+
+for k=1:B %1032
+    for n=1:D %257
+        if(isnan(c(n,k)+1)==0)
+            w(n,c(n,k)+1,k)=(cos(pi*r(n,k)/2)).^2;
+        end
+    end
+end
+
+NumEl=numel(w);
 for i=1:NumEl
-    if(isnan(c(i)))
-        c(i)=0;
+    if(isnan(w(i)))
+        w(i)=0;
     end
 end
 
@@ -39,25 +52,18 @@ end
 % c is the chroma (A,A#,B,etc.)
 % n is the frame number
 % Weighting function, w, needs to be k*n*c large
-
-r=12*log2(freqVals/f0)-sm;
-w=(cos(pi*r/2)).^2;
-
-PCP=zeros(b,12);
-c=c+1;
-
-
-for j=1:b
-    for i=1:12
-        PCP(j,i)=sum(c(:,j)==i);
+s=s.^2;
+PCP=zeros(12,B);
+for i=1:B
+    for j=1:12
+        %PCP(i,j)=sum(w(i,:,:).*(
     end
+    
 end
 
 
 
-for i=1:b
-    PCP(i,:)=PCP(i,:)/sum(PCP(i,:));
-end
+s=s.^2;
 
 if(nargin==2)
     h=figure;
@@ -72,6 +78,6 @@ if(nargin==2)
     ylabel('Note');
     colorbar;
     saveas(gca,['NPCP' filename(6:end-4) '.png']);
-%     close(h);
+    %     close(h);
 end
 end
