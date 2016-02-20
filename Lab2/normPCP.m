@@ -30,16 +30,18 @@ r=12*log2(freqVals/f0)-sm;
 c=mod(sm,12);
 % c=c+1;
 [D,B]=size(c); % 257,1032
-w=zeros(D,12,B);
+% w=zeros(D,12,B);
 
+w=(cos(pi*r/2)).^2;
 
-for k=1:B %1032
-    for n=1:D %257
-        if(isnan(c(n,k)+1)==0)
-            w(n,c(n,k)+1,k)=(cos(pi*r(n,k)/2)).^2;
-        end
-    end
-end
+% 
+% for k=1:B %1032
+%     for n=1:D %257
+%         if(isnan(c(n,k)+1)==0)
+%             w(n,c(n,k)+1,k)=(cos(pi*r(n,k)/2)).^2;
+%         end
+%     end
+% end
 
 NumEl=numel(w);
 for i=1:NumEl
@@ -54,24 +56,37 @@ end
 % Weighting function, w, needs to be k*n*c large
 s=s.^2;
 PCP=zeros(12,B);
-for i=1:B
-    for j=1:12
-        %PCP(i,j)=sum(w(i,:,:).*(
-    end
-    
-end
+
+
+% Pick out semitones
+% Loop through each value of c (1,2,...,12)
+% Find the corresponding rows to extract from w where semitone is 
+% (1,2,...,12) multiply by Xn at that row at the corresponding row
 
 
 
 s=s.^2;
 
+for i=1:B %nFrames
+    for j=0:11
+        a=find(c(:,i)==j);
+        PCP(12-j,i)=sum(w(a,i).*s(a,i));
+        %PCP(i,j)=sum(w(i,:,:).*(
+    end
+    
+end
+PCP=bsxfun(@rdivide,PCP,sum(PCP));
+
+
+
 if(nargin==2)
     h=figure;
-    imagesc(PCP');
-    ylim([1,12]);
+    imagesc(PCP);
+%     ylim([1,12]);
     ax=gca;
     ax.YTickLabel=fliplr({'A ','A#','B ','C ','C#','D ','D#','E ',...
         'F ','F#','G ','G#'});
+    ax.YTick=linspace(1,12,12);
     colormap 'jet';
     title({'Chroma :'; filename});
     xlabel('frames');
