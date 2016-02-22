@@ -8,20 +8,16 @@ mfccp=mfcc(fbank,filename);
 [a,b]=size(mfccp);
 % Preallocate matrix
 sim=zeros(b,b);
-% normI=sqrt(sum(abs(mfccp)
+normI=sqrt(sum(abs(mfccp).^2,1));
 parfor i=1:b %frame i
-        mfccNormI = sqrt(sum(mfccp(:,i).^2));
     for j=1:b %frame j
-                mfccNormJ = sqrt(sum(mfccp(:,j).^2));
         for k=1:a %fbank k
             sim(i,j)=sim(i,j)+...
-                (mfccp(k,i)*mfccp(k,j)/(mfccNormJ*mfccNormI));
+                (mfccp(k,i)*mfccp(k,j)/(normI(j).*normI(i)));
         end
     end
 end
-% sim(:)=sim(:)/max(sim(:));
-% ax=gca;
-% sim=(sim+1)/2;
+
 if(nargin == 2)
     h=figure;
     imagesc(sim);
@@ -29,8 +25,8 @@ if(nargin == 2)
     ylabel('Frame Number');
     title({'Similarity Matrix:'; filename});
     colorbar;
-%     colormap 'jet';
+    colormap 'jet';
     saveas(gca,['SimMatrix' filename(6:end-4) '.png']);
-%     close(h);
+    %     close(h);
 end
 end
