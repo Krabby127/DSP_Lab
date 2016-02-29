@@ -1,5 +1,5 @@
 %build everything necessary for report
-clear Xk fbank filename mfccp specHistogram mfcc sim ARm NPCP;
+clear filename song Xk mfccp specHistogram sim ARm NPCP;
 close all;
 fileArray = cellstr([
     'track201-classical.wav '; ...
