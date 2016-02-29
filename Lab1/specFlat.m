@@ -5,7 +5,7 @@ function [ SFn ] = specFlat( filename )
 Xk=freqDist(filename);
 SFn=(geomean(abs(Xk))./mean(abs(Xk)));
 
-h=figure
+h=figure;
 plot(SFn);
 title(['Spectral Flatness: "' filename '"']);
 xlabel('Frame Number');

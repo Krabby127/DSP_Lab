@@ -1,7 +1,7 @@
-function [ Xk ] = freqDist(filename)
+function [ Xk ] = freqDist(song)
 %freqDist Computes the frequency distribution
 % info=audioinfo(filename);
-song=extractSound(filename);
+% song=extractSound(filename);
 frames_overlap = buffer(song,512,256);
 w=kaiser(512);
 N=512;

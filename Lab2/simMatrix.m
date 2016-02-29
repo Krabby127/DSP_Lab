@@ -1,10 +1,10 @@
-function [ sim ] = simMatrix( filename,~)
+function [ sim ] = simMatrix(mfccp,filename,~)
 %simMatrix displays the similarity matrix for the mel coefficients
 %   The similarity matrix is defined as follows:
 %   S(i,j) = sum_{k=1}^{nbanks}{
 %   (mfcc(k,i)*mfcc(k,j))/(norm(mfcc(:,i)) * norm(mfcc(:,j)))
-fbank=melBank();
-mfccp=mfcc(fbank,filename);
+% fbank=melBank();
+% mfccp=mfcc(fbank,filename);
 [a,b]=size(mfccp);
 % Preallocate matrix
 sim=zeros(b,b);
@@ -18,7 +18,7 @@ parfor i=1:b %frame i
     end
 end
 
-if(nargin == 2)
+if(nargin == 3)
     h=figure;
     imagesc(sim);
     xlabel('Frame Number');
@@ -27,6 +27,6 @@ if(nargin == 2)
     colorbar;
     colormap 'jet';
     saveas(gca,['SimMatrix' filename(6:end-4) '.png']);
-    %     close(h);
+    close(h);
 end
 end

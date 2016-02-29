@@ -1,9 +1,10 @@
-function [ AR ] = autoC( filename,~ )
+function [ AR ] = autoC( filename,sim,~ )
 %autoC Computes the autocorrelation of a song
 %   In general, if two frames i and j are similar, we can find out
 %   if they are repeated later in the segment, at time j+l
+
 info = audioinfo(filename);
-sim = simMatrix( filename);
+% sim = simMatrix( filename);
 [len,~]=size(sim);
 AR=zeros(1,len);
 
@@ -16,7 +17,7 @@ parfor l=0:len-1
     AR(l+1)=AR(l+1)*(1/(len*(len-l)));
 end
 
-if(nargin==2)
+if(nargin==3)
     h=figure;
     xAxis=linspace(0,len/info.SampleRate,len);
     plot(xAxis,AR);
@@ -25,7 +26,7 @@ if(nargin==2)
     xlabel('Lag (secs)');
     ylabel('Autocorrelation');
     saveas(gca,['AutoC' filename(6:end-4) '.png']);
-%     close(h);
+    close(h);
 end
 
 end

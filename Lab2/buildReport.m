@@ -5,6 +5,7 @@ fileArray = cellstr([
     'track201-classical.wav '; ...
     'track204-classical.wav '; ...
     'track370-electronic.wav'; ...
+    'track370-electronic.wav'; ...
     'track396-electronic.wav'; ...
     'track437-jazz.wav      '; ...
     'track439-jazz.wav      '; ...
@@ -16,14 +17,16 @@ fileArray = cellstr([
     'track729-world.wav     '
     ]);
 fbank=melBank();
-parfor i=1:1    
-    filename=['' fileArray{i} '']
-    Xk=freqDist(filename);
-    mfccp=mfcc(fbank, filename);
-    specHistogram=spectrumHistogram(filename,1);
-    sim=simMatrix(filename,1);
-    rhythmIndex(filename,1);
-    autoC(filename,1);
-    ARm=rhythmVar( filename,1);
-    NPCP=normPCP(filename,1);
+len=length(fileArray);
+parfor i=1:12
+    filename=['' fileArray{i} ''];
+    song=extractSound(filename);
+    Xk=freqDist(song);
+    mfccp=mfcc(fbank,Xk);
+    specHistogram=spectrumHistogram(filename,mfccp,1);
+    sim=simMatrix(mfccp,filename,1);
+    rhythmIndex(filename,sim,1);
+    autoC(filename,sim,1);
+    ARm=rhythmVar( filename,sim,1);
+    NPCP=normPCP(filename,song,1);
 end

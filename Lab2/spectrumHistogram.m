@@ -1,40 +1,40 @@
-function [ specHistogram ] = spectrumHistogram(filename,~)
+function [ specHistogram ] = spectrumHistogram(filename,mfccp, ~)
 %SpectrumHistogram Constructs a 40x50 spectrum histogram
 %   Construct a two-dimensional spectrum histogram (a matrix of counts),
 %   with 40 columns - one for each mfcc index, and 50 rows - one for each
 %   amplitude level, measured in dB, from -20 to 60 dB. You will normalize
 %   the histogram, such that the sum along each column (for each "note")
 %   is one.
-fbank=melBank();
-mfccp=mfcc(fbank,filename);
-[a,b]=size(mfccp);
+mfccp=10*log10(mfccp);
+[a,~]=size(mfccp);
 if(a ~= 40)
     errorStruct.message = 'mfccp should have 40 rows';
     errorStruct.identifier = 'SpectrumHistogram:WrongSize';
     error(errorStruct);
 end
-
+bottom=min(min(mfccp));
+top=max(max(mfccp));
 specHistogram = zeros(50,40);
-dbSlots = linspace(-20,60,50);
-% Find closest dbSlots index
-for i = 1:a
-    for j=1:b
-        val = mfccp(i,j);
-        tmp=abs(dbSlots-val);
-        [~,index]=min(tmp);
-        specHistogram(index,i)=specHistogram(index,i)+1;
+dbSlots = linspace(bottom,top,51);
+
+for i=1:50 %50
+    
+    for j=1:a % 40 (numBanks)
+        specHistogram(i,j)=numel(find(mfccp(j,:)>dbSlots(i)...
+            & mfccp(j,:)<dbSlots(i+1)));
+        
     end
 end
 
 % Normalize function between 0 and 1
-for i=1:a
+for i=1:a %40
     specHistogram(:,i)=specHistogram(:,i)/sum(specHistogram(:,i));
 end
 
 % Option to plot and save figure
-if(nargin == 2)
+if(nargin == 3)
     h=figure;
-    imagesc(flipud(specHistogram));
+    imagesc(specHistogram);
     ax=gca;
     xlabel('MFCC index');
     ylabel('Amplitude level (dB)');
