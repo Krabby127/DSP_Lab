@@ -14,7 +14,8 @@ if(nargin)
     % Save away the list of indices to a file
     DateString=datestr(datetime('now'));
     DateString(DateString==' ')='_';
-    name= ['randomNum_', DateString];
+    DateString(DateString==':')='';
+    name= ['randomNum_', DateString '.mat'];
     save(name,'d');
 end
 end
