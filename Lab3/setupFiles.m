@@ -12,5 +12,4 @@ for i=1:NGenres
     for j=1:NSongs
         tracks{i,j}=trackTemp{j}; % MATLAB doesn't like cell math
     end
-    
 end

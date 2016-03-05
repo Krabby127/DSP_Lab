@@ -24,7 +24,6 @@ c=mod(sm,12);
 [~,B]=size(c); % 257,1032
 
 w=(cos(pi*r/2)).^2;
-% Make pretty with matrix
 w(isnan(w))=0;
 
 % k is the number of peaks
@@ -62,7 +61,7 @@ if(nargin==4)
         'F ','F#','G ','G#'});
     ax.YTick=linspace(1,12,12);
     colormap 'jet';
-    title({'Chroma :'; filename genre});
+    title({'Chroma :'; filename ' ' genre});
     xlabel('frames');
     ylabel('Note');
     colorbar;
