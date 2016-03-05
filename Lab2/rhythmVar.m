@@ -18,7 +18,7 @@ end
 
 ARm=ARm/20;
 
-if(nargin==2)
+if(nargin==3)
     h=figure;
     imagesc(ARm);
     ax=gca;
