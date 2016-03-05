@@ -45,7 +45,7 @@ if(nargin == 3)
     c=colorbar;
     colormap 'jet';
     c.Label.String = 'Percent Occurrences of each MFCC coeff.';
-    saveas(gca,['SpecHistogram' filename(6:end-4) '.png']);
+    saveas(gca,['specHistogram' filename(6:end-4) '.png']);
     close(h);
 end
 end
