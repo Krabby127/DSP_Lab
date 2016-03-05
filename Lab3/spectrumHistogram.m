@@ -27,8 +27,9 @@ for i=1:50 %50
 end
 
 % Normalize function between 0 and 1
+colTotal=sum(specHistogram);
 for i=1:a %40
-    specHistogram(:,i)=specHistogram(:,i)/sum(specHistogram(:,i));
+    specHistogram(:,i)=specHistogram(:,i)/colTotal(i);
 end
 
 % Option to plot and save figure
