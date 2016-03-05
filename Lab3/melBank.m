@@ -4,8 +4,8 @@ function [ fbank ] = melBank(~)
 %   Hp, p = 1,...,NB. Your function will return an array fbank of size
 %   NB x K such that fbank(p,:) contains the filter bank Hp.
 
-[~,fs]=audioread('track201-classical.wav');
-
+[~,fs]=audioread(fullfile('..','data','classical',...
+    'artist_1_album_2_track_2.wav')); % use this file as sample for fs
 N=512;
 K=N/2+1;
 
