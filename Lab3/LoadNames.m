@@ -1,4 +1,4 @@
-filepath = '../Tracks'; 
+filepath = '../data'; 
 
 Fs = 22050;
 T = 120; % 120 seconds, 2 mins
