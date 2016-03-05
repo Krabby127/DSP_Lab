@@ -54,13 +54,13 @@ for i = 2:nbanks+1
 end
 
 if(nargin)
-    %     h=figure;
+    h=figure;
     plot(fbank.');
     title('Mel Filter Bank');
     xlabel('Frequency (Hz)');
     ylabel('Filter Magnitude');
     xlim([0,length(fbank)]);
     saveas(gca,'melFilterBank.png');
-    %     close(h);
+    close(h);
 end
 end

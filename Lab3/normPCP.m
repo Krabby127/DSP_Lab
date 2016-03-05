@@ -1,4 +1,4 @@
-function [PCP] = normPCP( filename,x,genre,~)
+function [PCP] = normPCP( filename,x,~)
 %rhythmIndex Identifies rhythmic periods
 %   B(l) is the sum of all the entries on the lth upper diagonal.
 %   The index l associated with the largest value of B(l) corresponds to
@@ -51,21 +51,22 @@ for i=1:B %nFrames
 end
 PCP=bsxfun(@rdivide,PCP,sum(PCP));
 
+[pathstr,name,ext] = fileparts(filename) ;
 
-
-if(nargin==4)
+if(nargin==3)
     h=figure;
+    genre=pathstr(find(pathstr==filesep,1,'last')+1:end);
     imagesc(PCP);
     ax=gca;
     ax.YTickLabel=fliplr({'A ','A#','B ','C ','C#','D ','D#','E ',...
         'F ','F#','G ','G#'});
     ax.YTick=linspace(1,12,12);
     colormap 'jet';
-    title({'Chroma :'; filename ' ' genre});
+    title({'Chroma :';genre ' ' name ext  });
     xlabel('frames');
     ylabel('Note');
     colorbar;
-    saveas(gca,['NPCP' genre filename(1:end-4) '.png']);
+    saveas(gca,['NPCP' genre name '.png']);
     close(h);
 end
 end

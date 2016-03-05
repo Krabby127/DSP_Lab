@@ -31,7 +31,7 @@ colTotal=sum(specHistogram);
 for i=1:a %40
     specHistogram(:,i)=specHistogram(:,i)/colTotal(i);
 end
-
+[~,name,ext] = fileparts(filename);
 % Option to plot and save figure
 if(nargin == 4)
     h=figure;
@@ -39,14 +39,14 @@ if(nargin == 4)
     ax=gca;
     xlabel('MFCC index');
     ylabel('Amplitude level (dB)');
-    title({'Spectrum Histogram:';genre ' ' filename});
+    title({'Spectrum Histogram:';genre ' ' name ext});
     ax.YTick = flipud(linspace(0,50,11));
     ax.YTickLabel = fliplr({'-20 dB' '-12 dB' '-4 dB' '4 dB' '12 dB'...
         '20 dB' '28 dB' '36 dB' '44 dB' '52 dB' '60 dB'});
     c=colorbar;
     colormap 'jet';
     c.Label.String = 'Percent Occurrences of each MFCC coeff.';
-    saveas(gca,['specHistogram' genre filename(6:end-4) '.png']);
+    saveas(gca,['specHistogram' genre name '.png']);
     close(h);
 end
 end
