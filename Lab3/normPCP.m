@@ -32,15 +32,6 @@ w(isnan(w))=0;
 % Weighting function, w, needs to be k*n*c large
 
 PCP=zeros(12,B);
-
-
-% Pick out semitones
-% Loop through each value of c (1,2,...,12)
-% Find the corresponding rows to extract from w where semitone is
-% (1,2,...,12) multiply by Xn at that row at the corresponding row
-
-
-
 peaks=peaks.^2;
 
 for i=1:B %nFrames
@@ -51,22 +42,23 @@ for i=1:B %nFrames
 end
 PCP=bsxfun(@rdivide,PCP,sum(PCP));
 
-[pathstr,name,ext] = fileparts(filename) ;
-
 if(nargin==3)
     h=figure;
+    [pathstr,name,ext] = fileparts(filename) ;
     genre=pathstr(find(pathstr==filesep,1,'last')+1:end);
+    bottomTitle=[genre ' ' name ext];
     imagesc(PCP);
     ax=gca;
     ax.YTickLabel=fliplr({'A ','A#','B ','C ','C#','D ','D#','E ',...
         'F ','F#','G ','G#'});
     ax.YTick=linspace(1,12,12);
     colormap 'jet';
-    title({'Chroma :';genre ' ' name ext  });
+    % make underscores appear fine
+    title({'Chroma :';bottomTitle},'Interpreter','none');
     xlabel('frames');
     ylabel('Note');
     colorbar;
-    saveas(gca,['NPCP' genre name '.png']);
+    saveas(gca,['NPCP_' upper(genre) name '.png']);
     close(h);
 end
 end

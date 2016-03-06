@@ -5,12 +5,13 @@ function [ soundExtract,p ] = extractSound( filename, time)
 %   read a track and the function play to listen to the track.
 narginchk(1, 2);
 if(nargin == 1)
-    time = 24;
+    time = 120; %default is to read 2 minutes
 end
 info = audioinfo(filename);
 song=audioread(filename);
 if time >= info.Duration
     soundExtract=song;
+    warning('Data may be less accurate with less than 2 minutes');
     if(nargout == 2)
         p=audioplayer(soundExtract,info.SampleRate);
     end
