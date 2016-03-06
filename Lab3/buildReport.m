@@ -17,8 +17,8 @@ parfor i=1:1
         for k=1:1
             filename=fullfile('..','data',folderNames{i},trackTest{i,j,k});
             song=extractSound(filename);
-%             Xk=freqDist(song);
-%             mfccp=mfcc(fbank,Xk);
+            Xk=freqDist(song);
+            mfccp=mfcc(fbank,Xk);
             NPCP=normPCP(filename,song,1);
         end
     end

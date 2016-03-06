@@ -11,7 +11,7 @@ info = audioinfo(filename);
 song=audioread(filename);
 if time >= info.Duration
     soundExtract=song;
-    warning('Data may be less accurate with less than 2 minutes');
+%     warning('Data may be less accurate with less than 2 minutes');
     if(nargout == 2)
         p=audioplayer(soundExtract,info.SampleRate);
     end
