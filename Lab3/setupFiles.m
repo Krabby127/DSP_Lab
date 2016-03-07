@@ -8,6 +8,9 @@ if isunix
     folderNames(end)=[]; % Remove space
 end
 folderNames=cellstr(folderNames); % convert to cells
+if isunix
+    folderNames=folderNames';
+end
 NGenres=length(folderNames); % count the number of genre folders
 NSongs = 25; % assuming 25 songs per genre
 tracks=cell(NGenres,NSongs); % crete an empty cell array
@@ -25,16 +28,8 @@ for i=1:NGenres
     
     trackTemp=cellstr(trackTemp); % convert to cells
     for j=1:NSongs
-        tracks{i,j}=trackTemp{j}; % MATLAB doesn't like cell math
-    end
-end
-
-if isunix
-    numEL=numel(tracks);
-    
-    for i=1:numEL
-        [~,name,ext]=fileparts(tracks{i});
-        tracks{i}=[name ext];
+        [~,name,ext]=fileparts(trackTemp{j});
+        tracks{i,j}=[name ext]; % MATLAB doesn't like cell math
     end
 end
 end
