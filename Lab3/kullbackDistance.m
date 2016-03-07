@@ -13,6 +13,6 @@ K=12;
 KL=0.5*(trace(pinv(Cov2)*Cov1)+((mu2-mu1)')*pinv(Cov2)*(mu2-mu1)-K+ ...
     log((abs(det(Cov2)/det(Cov1)))));
 
-lambda=1E-2; % Lambda should be very very small
-d=min(max(abs(exp(-1*lambda*KL)),0),1);
+gamma=0.005; % gamma should be very very small
+d=min(max(abs(exp(-1*gamma*KL)),0),1); % clamped between 0 and 1
 end
