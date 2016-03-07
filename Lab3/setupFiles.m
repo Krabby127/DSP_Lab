@@ -28,4 +28,13 @@ for i=1:NGenres
         tracks{i,j}=trackTemp{j}; % MATLAB doesn't like cell math
     end
 end
+
+if isunix
+    numEL=numel(tracks);
+    
+    for i=1:numEL
+        [~,name,ext]=fileparts(tracks{i});
+        tracks{i}=[name ext];
+    end
+end
 end
