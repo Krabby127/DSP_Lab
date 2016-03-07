@@ -14,13 +14,15 @@ tracks=cell(NGenres,NSongs); % crete an empty cell array
 for i=1:NGenres
     % feed into array
     trackTemp=ls(fullfile('..','data', folderNames{i},'*') );
+    
+    if (isunix==0)
+        trackTemp(1:2,:)=[]; % first two will always be . and ..
+    end
     if isunix
         trackTemp=strsplit(trackTemp);
         trackTemp(end)=[];
     end
-    if (isunix==0)
-        trackTemp(1:2,:)=[]; % first two will always be . and ..
-    end
+    
     trackTemp=cellstr(trackTemp); % convert to cells
     for j=1:NSongs
         tracks{i,j}=trackTemp{j}; % MATLAB doesn't like cell math
