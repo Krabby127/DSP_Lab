@@ -1,39 +1,53 @@
-function [ distMatrix ] = distanceMatrix( mfccList,~)
-%distanceMatrix Summary of this function goes here
-%   Detailed explanation goes here
-
-numTracks=length(mfccList);
-distMatrix=zeros(numTracks,numTracks);
-% parfor i=1:numTracks
-%     for j=1:numTracks
-%         if(i==j)
-%             distMatrix(i,j)=1;
-%         else
-%             distMatrix(i,j)=kullbackDistance(mfccList{i},mfccList{j});
+function [ distMatrix ] = distanceMatrix( xList,whichPlot)
+%distanceMatrix Computes the distance between every song
+%   Uses a precomputed list of the mfcc/normPCP matrices to compute the
 %
-%         end
-%     end
-% end
 
-parfor i=1:(numTracks*numTracks)
-    [a,b]=ind2sub([numTracks,numTracks],i);
-    if((a-b)==0)
-        distMatrix(i)=1;
-    else
-        distMatrix(i)=kullbackDistance(mfccList{a},mfccList{b});
+numTracks=length(xList);
+distMatrix=zeros(numTracks,numTracks);
+
+num2=numTracks*numTracks;
+h=waitbar(0,'Please wait...');
+for i=1:numTracks
+    for j=1:numTracks
+        waitbar(sub2ind([numTracks,numTracks],j,i)/num2);
+        if(i==j)
+            distMatrix(i,j)=1;
+        else
+            distMatrix(i,j)=kullbackDistance(xList{i},xList{j});
+        end
     end
 end
 
+% for i=1:num2
+%     [a,b]=ind2sub([numTracks,numTracks],i);
+%     waitbar(i/num2);
+%     if((a-b)==0)
+%         distMatrix(i)=1;
+%     else
+%         mfccp1=mfccList{a};
+%         mfccp2=mfccList{b};
+%         distMatrix(i)=kullbackDistance(mfccp1,mfccp2);
+%     end
+% end
+close(h); % close waitbar
 if(nargin==2) %plot graph and save away
     h=figure;
-    imagesec(distMatrix);
+    if(whichPlot==1)
+        name='MFCC';
+    else
+        name='Chroma';
+    end
+    
+    imagesc(distMatrix);
     colormap 'jet';
     colorbar;
-    title('Distance Matrix');
+    title({'Distance Matrix:';name});
     xlabel('Song A');
     ylabel('Song B');
-    saveas(gca,'distanceMatrix.png');
+    saveName=['distanceMatrix' name '.png'];
+    saveas(gca,saveName);
     
-    close(h);
+    % close(h);
 end
 end

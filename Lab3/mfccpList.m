@@ -6,7 +6,7 @@ folderNames=repmat(folderNames,[1,25]);
 folderNames=folderNames';
 
 fbank=melBank();
-tracks=tracks';% allows us to keep songs within same genre close
+tracks=tracks';% allows us to keep songs within same genre close together
 numTracks=numel(tracks);
 
 
@@ -15,6 +15,5 @@ parfor i=1:numTracks
     filename=fullfile('..','data',folderNames{i},tracks{i});
     mfccList{i}=mfcc(fbank,freqDist(extractSound(filename)));
 end
-display('Finished with mfccList');
 
 end

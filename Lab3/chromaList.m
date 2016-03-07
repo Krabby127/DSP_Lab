@@ -5,7 +5,7 @@ function [ npcpList ] = chromaList( tracks,folderNames )
 folderNames=repmat(folderNames,[1,25]);
 folderNames=folderNames';
 
-tracks=tracks';% allows us to keep songs within same genre close
+tracks=tracks';% allows us to keep songs within same genre close together
 numTracks=numel(tracks);
 
 
@@ -15,6 +15,5 @@ parfor i=1:numTracks
     x=extractSound(filename);
     npcpList{i}=normPCP(filename,x);
 end
-display('Finished with chromaList');
 
 end

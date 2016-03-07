@@ -6,7 +6,7 @@ function [PCP] = normPCP( filename,x,~)
 info=audioinfo(filename);
 % x=extractSound(filename);
 [s,~,~]=spectrogram(x,kaiser(512),256,512,info.SampleRate,'yaxis');
-s=abs(s);
+s=abs(s); % Need to work with non-complex values
 [a,b]=size(s);
 
 % pks=zeros(a,b);
@@ -16,7 +16,7 @@ for i=1:b
     len=length(findpeaks(s(:,i)));
     [peaks(1:len,i),locs(1:len,i)]=findpeaks(s(:,i));
 end
-freqVals=(5512/257)*locs;
+freqVals=(info.SampleRate/2/a)*locs;
 f0=27.5;
 sm=round(12*log2(freqVals/f0));
 r=12*log2(freqVals/f0)-sm;
@@ -41,7 +41,7 @@ for i=1:B %nFrames
     end
 end
 PCP=bsxfun(@rdivide,PCP,sum(PCP));
-
+PCP(isnan(PCP))=0;
 if(nargin==3)
     h=figure;
     [pathstr,name,ext] = fileparts(filename) ;
@@ -54,7 +54,7 @@ if(nargin==3)
     ax.YTick=linspace(1,12,12);
     colormap 'jet';
     % make underscores appear fine
-    title({'Chroma :';bottomTitle},'Interpreter','none');
+    title({'Chroma:';bottomTitle},'Interpreter','none');
     xlabel('frames');
     ylabel('Note');
     colorbar;
