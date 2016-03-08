@@ -16,7 +16,7 @@ fileArray = cellstr([
     'track729-world.wav     '
     ]);
 fbank=melBank();
-for i=12:12
+parfor i=1:12
     filename=['' fileArray{i} ''];
     song=extractSound(filename);
     Xk=freqDist(song);

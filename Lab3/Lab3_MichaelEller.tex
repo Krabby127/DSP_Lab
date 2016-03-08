@@ -20,6 +20,7 @@
 %   read geometry.pdf for detailed page layout information
 
 \usepackage{graphicx} % support the \includegraphics command and options
+\usepackage{subcaption}
 \usepackage[normalem]{ulem}
 % \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
 %\usepackage[subsection]{placeins}
@@ -86,6 +87,134 @@ Intervals" by Keith Jarrett is selected, one would expect that the algorithm cla
 
 \section{Distances Between Tracks}
 
+The goal of the classification is to assign a genre to a song. In this lab, we are forcusing on simple techniques, such as the k-nearest neighbors. 
 
+After condensing our previous MFCC from 40 bins to 12 bins, we can more accurately compare the effectiveness of the MFCC features vs the Chroma features we developed in Lab 2. 
+
+Given either matrix (MFCC or Chroma), we are able to calculate the Kullback-Leibler divergence:
+\begin{equation}
+\label{eq:KL}
+KL(G^s,G^{s'})=\frac{1}{2}\left (\text{tr}(\Sigma_{s'}^{-1}\Sigma_s) + (\mu_{s'}-\mu_s)^T \Sigma_{s'}^{-1} (\mu_{s'}-\mu_s)-K+
+\log\left( \frac{\det \Sigma_{s'}}{\det \Sigma_s} \right) \right )
+\end{equation}
+
+We may note that this distance is very similar to the Mahalanobis distance discussed in class. 
+
+Finally, the KL distance is rescaled using an exponential kernel, and we define the distance between the tracks $s$ and $s'$ as
+\begin{equation}
+\label{eq:KLd}
+d(s,s')=\exp \left( -\gamma KL(G^s,G^{s'})\right)
+\end{equation}
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\item Implement the computation of the the distance \emph{D} given by Equation \ref{eq:KLd}. Your function should be able to use the 12 merged MFCC coefficients or the Normalized Pitch
+Class Profile. 
+\item Compute the matrix of pairwise distance
+\begin{equation}
+D(s,s'),s,s'=1,\dots,150
+\end{equation}
+Display the distance matrix as an image, and discuss its structure
+\item For each genre, compute the histogram composed of the 300 pairwise distances within that genre. Plot the six histograms on the same figure. Comment on the figure. 
+\item Compute the $6 \times 6$ average distance matrix between the genres, defined by
+\begin{equation}
+\widebar{D}(i,j)=\frac{1}{25^2} \sum\limits_{s\in \text{genre } i,\; s' \in \text{genre } j} d(s,s'), \quad i,j=1,\dots,6
+\end{equation}
+\item Experiment with different values of $\gamma$, and find a value of $\gamma$ that maximizes the seperation between the different genres, as defined by the $6 \times 6$ 
+average distance matrix $\widebar{D}$.
+\item Compare the MFCC and the Normalized Pitch Class Profile in terms of the $6 \times 6$  average distance matrix $\widebar{D}$.
+\end{enumerate}
+\end{framed}
+
+
+As seen below in Listing \ref{ls:KLdm}, the Kullback-Leibler distance is a fairly straightforward computation. At one point, before I fixed accompanying computations, there were somehow
+distances generated outside of the 0 to 1 range that the function should generate. As a sanity check, I clamped the final values between 0 and 1, and the extra 3 computations have
+not seemed to affect the performance of my function. 
+
+\lstinputlisting[caption=kullbackDistance.m,language=MATLAB,numbers=left,label=ls:KLdm]{./kullbackDistance.m} 
+
+
+
+After the basic function was created, we would next compute the distance between all 150 songs with each other. To save time, we could have just computed the upper triangle of
+our matrix and then mirrored it over the diagonal (resulting in only 11,175 calculations), but our distance function is unfortunately not symmetrical. This forces us to compute all
+$150 \times 150 = 22,500$ combinations. We are, however, able to slightly reduce the number of calculations by noting that any distance between itself will always be 1. 
+This saves us 150 calculations. 
+
+With the same $\gamma$ in both distance matrix calculations, the MFCC and the Chroma give very different results. The MFCC matrix seems like a more viable candidate because it is
+computationally faster (to compute the 150 mfcc matrices) and it is less saturated. 
+
+\begin{figure}[H]
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{distanceMatrixChroma.png}
+\caption{Distance Matrix: Chroma}
+\label{fig:dMatChr}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{distanceMatrixMFCC.png}
+\caption{Distance Matrix: MFCC}
+\label{fig:dMatChr}
+\end{subfigure}
+\end{figure}
+
+
+\lstinputlisting[caption=distanceMatrix.m,language=MATLAB,numbers=left,label=ls:KLdm]{./distanceMatrix.m} 
+
+
+The results from the genre histograms are surprisingly helpful. Punk and Rock (which acoustically sound very similar to each other) have fairly similar histograms. 
+World and Classical (which are known for both being very wide genres) have a large spike at zero. This implies that many songs within the same genre are very loosely related. 
+Electronic and Jazz also have very similar looking histograms. As the two genres personally do not sound very similar, I do not know if this has any quantifiable meaning. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{genreHistogram.png}
+\caption{Genre Histograms}
+\label{fig:genreHisto}
+\end{figure}
+
+\lstinputlisting[caption=genreHistogram.m,language=MATLAB,numbers=left,label=ls:KLdm]{./genreHistogram.m} 
+
+
+
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{6}
+\item Evaluate the effect of the length of the audio segment using the following lengths: 30, 60, 120, 240 seconds. For each length you will compare the seperation of the different genres
+ using the $6 \times 6$  average distance matrix $\widebar{D}$.
+\end{enumerate}
+\end{framed}
+
+
+
+\begin{framed}
+\begin{enumerate}
+\setcounter{enumi}{7}
+\item Implement a classifier based on the following ingredients:
+\begin{itemize}
+\item computation of the 12 mfcc coefficients, or 12 Normalized Pitch Class Profile
+\item modified Kullback-Leibler distance $d$ defined by Equation \ref{eq:KLd}
+\item genre = majority vote among the 5 nearest neighbors
+\end{itemize}
+\item Using cross validation evaluate your classification algorithm. You will compute the mean and standard deviation for all the entries in the confusion matrices. 
+\item Compare the performance of the classification using the 12 mfcc coefficients, or 12 Normalized Pitch Class Profile. 
+\end{enumerate}
+\end{framed}
+
+As far as performance, there is no question as whether to use the MFCC coefficients or the Normalized Pitch Class Profile. The MFCC coefficients are computed orders of magnitude faster
+than the Normalized Pitch Class Profile. It was computationally unreasonable to compute all 150 Normalized Pitch Class Profiles with a time sample of 240 seconds. With an upper bound of 
+35 seconds on computing one Normalized Pitch Class Profile matrix, computing all 150 tracks would have taken around 1.5 hours. Instead, I opted to only compute the NPCP matrices
+for all 150 songs using a 30 second sample. 
+
+
+\begin{framed}
+\begin{enumerate}
+\setcounter{enumi}{10}
+\item Improve the classifier using one of the suggestions above. Two different improvements will earn extra-credit.
+\end{enumerate}
+\end{framed}
 
 \end{document}

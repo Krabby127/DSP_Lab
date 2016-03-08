@@ -24,42 +24,42 @@ if(nargin==2)
     subplot(2,3,1);
     h1=histogram(genreHisto(:,:,1));
     h1.Normalization='probability';
-    h1.BinWidth=0.1;
+    h1.BinWidth=0.05;
     h1.FaceColor='red';
     title('Classical');
     
     subplot(2,3,2);
     h2=histogram(genreHisto(:,:,2));
     h2.Normalization='probability';
-    h2.BinWidth=0.1;
+    h2.BinWidth=0.05;
     h2.FaceColor='green';
     title('Electronic');
     
     subplot(2,3,3);
     h3=histogram(genreHisto(:,:,3));
     h3.Normalization='probability';
-    h3.BinWidth=0.1;
+    h3.BinWidth=0.05;
     h3.FaceColor='blue';
     title('Jazz');
     
     subplot(2,3,4);
     h4=histogram(genreHisto(:,:,4));
     h4.Normalization='probability';
-    h4.BinWidth=0.1;
+    h4.BinWidth=0.05;
     h4.FaceColor='cyan';
     title('Punk');
     
     subplot(2,3,5);
     h5=histogram(genreHisto(:,:,5));
     h5.Normalization='probability';
-    h5.BinWidth=0.1;
+    h5.BinWidth=0.05;
     h5.FaceColor='magenta';
     title('Rock');
     
     subplot(2,3,6);
     h6=histogram(genreHisto(:,:,6));
     h6.Normalization='probability';
-    h6.BinWidth=0.1;
+    h6.BinWidth=0.05;
     h6.FaceColor='yellow';
     title('World');
     saveas(gca,'genreHistogram.png');
