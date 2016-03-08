@@ -4,7 +4,7 @@ function [ genreHisto ] = genreHistogram( xList,~ )
 
 a=combnk(1:25,2);
 len=nchoosek(25,2);
-genreHisto=zeros(25,25,6);
+genreHisto=zeros(25,25,6)-1; % Sanity check for debugging
 for j=1:6
     for i=1:len
         ind=a(i,:);
@@ -65,7 +65,4 @@ if(nargin==2)
     saveas(gca,'genreHistogram.png');
     close(h);
 end
-
-
 end
-
