@@ -2,7 +2,8 @@ function [ mfccList ] = mfccpList( tracks,folderNames,timeLength )
 %mfccpList Precomputes the mfcc for all 150 songs
 
 % allows for easier indexing
-folderNames=repmat(folderNames,[1,25]);
+[~,b]=size(tracks);
+folderNames=repmat(folderNames,[1,b]);
 folderNames=folderNames';
 
 fbank=melBank();
