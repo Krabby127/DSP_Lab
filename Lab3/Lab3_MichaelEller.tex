@@ -256,6 +256,20 @@ but the additional computation time required does not warrant the insubstantial 
 \end{enumerate}
 \end{framed}
 
+Upon implementing my confusion matrix, the results were quite surprising. While my previous results looked less than promising, my nearest songs genre picker 
+(as seen in listing \ref{ls:knear}) seemed to pick the correct genres most of the time, except in the case of World, which should be expected since it has no true classification
+that puts a song into that genre. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{confusionMatrix.png}
+\caption{Confusion Matrix}
+\label{fig:confM}
+\end{figure}
+
+\lstinputlisting[caption=nearestSongs.m,language=MATLAB,numbers=left,label=ls:knear]{./nearestSongs.m} 
+
+
 As far as performance, there is no question as whether to use the MFCC coefficients or the Normalized Pitch Class Profile. The MFCC coefficients are computed orders of magnitude faster
 than the Normalized Pitch Class Profile. It was computationally unreasonable to compute all 150 Normalized Pitch Class Profiles with a time sample of 240 seconds. With an upper bound of 
 35 seconds on computing one Normalized Pitch Class Profile matrix, computing all 150 tracks would have taken around 1.5 hours. Instead, I opted to only compute the NPCP matrices
@@ -269,10 +283,126 @@ for all 150 songs using a 30 second sample.
 \end{enumerate}
 \end{framed}
 
+A possible improvement could have been using Euclidian distance instead of our custom Kullback-Leibler distance with its weighting kernel. MATLAB has toolkits already to handle
+classifying data and it naturally uses Euclidian distance because it is easy and also effective. 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \appendix
 \section{Figures}
+
+\subsection{Distance Matrix}
+\subsubsection{Chroma}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{distanceMatrixChroma30.png}
+\caption{Distance Matrix Chroma: 30 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{distanceMatrixChroma60.png}
+\caption{Distance Matrix Chroma: 60 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{distanceMatrixChroma120.png}
+\caption{Distance Matrix Chroma: 120 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{distanceMatrixChroma240.png}
+\caption{Distance Matrix Chroma: 240 seconds}
+\end{figure}
+
+
+\subsubsection{MFCC}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{distanceMatrixMFCC30.png}
+\caption{Distance Matrix MFCC: 30 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{distanceMatrixMFCC60.png}
+\caption{Distance Matrix MFCC: 60 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{distanceMatrixMFCC120.png}
+\caption{Distance Matrix MFCC: 120 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{distanceMatrixMFCC240.png}
+\caption{Distance Matrix MFCC: 240 seconds}
+\end{figure}
+
+
+\clearpage
+\subsection{Genre Distribution Matrix}
+\subsubsection{Chroma}
+\label{sec:gdcA}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{genreDistributionMatrixNPCP30.png}
+\caption{Genre Distribution Matrix Chroma: 30 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{genreDistributionMatrixNPCP60.png}
+\caption{Genre Distribution Matrix Chroma: 60 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{genreDistributionMatrixNPCP120.png}
+\caption{Genre Distribution Matrix Chroma: 120 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{genreDistributionMatrixNPCP240.png}
+\caption{Genre Distribution Matrix Chroma: 240 seconds}
+\end{figure}
+
+
+\subsubsection{MFCC}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{genreDistributionMatrixMFCC30.png}
+\caption{Genre Distribution Matrix Chroma: 30 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{genreDistributionMatrixMFCC60.png}
+\caption{Genre Distribution Matrix Chroma: 60 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{genreDistributionMatrixMFCC120.png}
+\caption{Genre Distribution Matrix Chroma: 120 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{genreDistributionMatrixMFCC240.png}
+\caption{Genre Distribution Matrix Chroma: 240 seconds}
+\end{figure}
+
+
 
 
 
@@ -298,6 +428,7 @@ for all 150 songs using a 30 second sample.
 \lstinputlisting[caption=nearestSongs.m,language=MATLAB,numbers=left]{./nearestSongs.m} 
 \lstinputlisting[caption=randTest.m,language=MATLAB,numbers=left]{./randTest.m} 
 \lstinputlisting[caption=setupFiles.m,language=MATLAB,numbers=left]{./setupFiles.m} 
+\lstinputlisting[caption=confuseMatrix.m,language=MATLAB,numbers=left]{./confuseMatrix.m} 
 
 
 \end{document}

@@ -47,6 +47,6 @@ if(nargin>=2) %plot graph and save away
     saveName=['distanceMatrix' name timeLength '.png'];
     saveas(gca,saveName);
     
-%     close(h);
+    close(h);
 end
 end
