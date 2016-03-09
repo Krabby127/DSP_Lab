@@ -10,9 +10,9 @@ Cov2=cov(Q','omitrows');
 
 K=12;
 
-KL=0.5*(trace(pinv(Cov2)*Cov1)+((mu2-mu1)')*pinv(Cov2)*(mu2-mu1)-K+ ...
-    log((abs(det(Cov2)/det(Cov1)))));
+KL=(0.5*trace(pinv(Cov2)*Cov1+(pinv(Cov1)*Cov2)))-K+...
+    (0.5*(mu1-mu2)')*(pinv(Cov2)+pinv(Cov1))*(mu1-mu2);
 
-gamma=0.005; % gamma should be very very small
-d=min(max(abs(exp(-1*gamma*KL)),0),1); % clamped between 0 and 1
+gamma=0.002; % gamma should be very very small
+d=exp(-1*gamma*KL);% Apply weighting kernel
 end

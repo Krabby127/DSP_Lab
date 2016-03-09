@@ -34,6 +34,7 @@
 \usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
 % These packages are all incorporated in the memoir class to one degree or another...
 \usepackage{mcode}
+\usepackage{xfrac}
 \usepackage{lstlinebgrd}
 %%% HEADERS & FOOTERS
 \usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
@@ -174,10 +175,32 @@ Electronic and Jazz also have very similar looking histograms. As the two genres
 \label{fig:genreHisto}
 \end{figure}
 
-\lstinputlisting[caption=genreHistogram.m,language=MATLAB,numbers=left,label=ls:KLdm]{./genreHistogram.m} 
+\lstinputlisting[caption=genreHistogram.m,language=MATLAB,numbers=left,label=ls:genH]{./genreHistogram.m} 
 
 
+Despite taking a while to calculate, once calculated, the distance matrix is very easy to parse. The genreDist function sums $\sfrac{1}{36}$ of the matrix at a time. Each of these
+chunks are arranged so that it is entirely the intersection of two genres. 
+And through experimentation, I found that a small value around 0.05 tended to give me the most distinction between genres. This is despite hearing from colleagues that an even
+smaller value would produce better results. When I tried a smaller $\gamma$, all the components on the distance matrix tended towards 1 and I just saw a high saturated graph. 
 
+
+\begin{figure}[H]
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{genreDistributionMatrixNPCP.png}
+\caption{Genre Distribution Matrix: Chroma}
+\label{fig:gDistC}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{genreDistributionMatrixMFCC.png}
+\caption{Genre Distribution Matrix: MFCC}
+\label{fig:gDistM}
+\end{subfigure}
+\end{figure}
+
+
+\lstinputlisting[caption=genreDist.m,language=MATLAB,numbers=left,label=ls:genD]{./genreDist.m} 
 
 \begin{framed}
 \textbf{Assignment}
@@ -188,6 +211,35 @@ Electronic and Jazz also have very similar looking histograms. As the two genres
 \end{enumerate}
 \end{framed}
 
+Despite using larger samples for the songs, the genre distribution matrices did not seem to change much. There may be a slight increase in accuracy from 30 seconds to 240 seconds,
+but the additional computation time required does not warrant the insubstantial improvement. 
+
+\begin{figure}[H]
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{genreDistributionMatrixMFCC30.png}
+\caption{Genre Distribution Matrix: MFCC 30 seconds}
+\label{fig:gDistM30}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{genreDistributionMatrixMFCC60.png}
+\caption{Genre Distribution Matrix: MFCC 60 seconds}
+\label{fig:gDistM60}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{genreDistributionMatrixMFCC120.png}
+\caption{Genre Distribution Matrix: MFCC 120 seconds}
+\label{fig:gDistM120}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{genreDistributionMatrixMFCC240.png}
+\caption{Genre Distribution Matrix: MFCC 240 seconds}
+\label{fig:gDistM240}
+\end{subfigure}
+\end{figure}
 
 
 \begin{framed}
@@ -216,5 +268,36 @@ for all 150 songs using a 30 second sample.
 \item Improve the classifier using one of the suggestions above. Two different improvements will earn extra-credit.
 \end{enumerate}
 \end{framed}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\appendix
+\section{Figures}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\section{Code}
+
+\lstinputlisting[caption=buildReport.m,language=MATLAB,numbers=left]{./buildReport.m} 
+\lstinputlisting[caption=kullbackDistance.m,language=MATLAB,numbers=left]{./kullbackDistance.m} 
+\lstinputlisting[caption=chromaList.m,language=MATLAB,numbers=left]{./chromaList.m} 
+\lstinputlisting[caption=mfccpList.m,language=MATLAB,numbers=left]{./mfccpList.m} 
+\lstinputlisting[caption=distanceMatrix.m,language=MATLAB,numbers=left]{./distanceMatrix.m} 
+\lstinputlisting[caption=genreHistogram.m,language=MATLAB,numbers=left]{./genreHistogram.m} 
+\lstinputlisting[caption=assignRandTracks.m,language=MATLAB,numbers=left]{./assignRandTracks.m} 
+\lstinputlisting[caption=freqDist.m,language=MATLAB,numbers=left]{./freqDist.m} 
+\lstinputlisting[caption=extractSound.m,language=MATLAB,numbers=left]{./extractSound.m} 
+\lstinputlisting[caption=genreDist.m,language=MATLAB,numbers=left]{./genreDist.m}
+\lstinputlisting[caption=genreHistogram.m,language=MATLAB,numbers=left]{./genreHistogram.m} 
+\lstinputlisting[caption=mellBank.m,language=MATLAB,numbers=left]{./melBank.m} 
+\lstinputlisting[caption=mfcc.m,language=MATLAB,numbers=left]{./mfcc.m} 
+\lstinputlisting[caption=normPCP.m,language=MATLAB,numbers=left]{./normPCP.m} 
+\lstinputlisting[caption=nearestSongs.m,language=MATLAB,numbers=left]{./nearestSongs.m} 
+\lstinputlisting[caption=randTest.m,language=MATLAB,numbers=left]{./randTest.m} 
+\lstinputlisting[caption=setupFiles.m,language=MATLAB,numbers=left]{./setupFiles.m} 
+
 
 \end{document}

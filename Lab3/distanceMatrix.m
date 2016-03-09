@@ -21,10 +21,21 @@ end
 close(h); % close waitbar
 if(nargin>=2) %plot graph and save away
     h=figure;
-    if(whichPlot==1)
-        name='MFCC';
-    else
-        name='Chroma';
+    switch whichPlot
+        case 0
+            name='Chroma';
+        case 1
+            name='MFCC';
+        case 2
+            name='Chroma-Test';
+        case 3
+            name='MFCC-Test';
+        case 4
+            name='Chroma-Train';
+        case 5
+            name='MFCC-Train';
+        otherwise
+            name='';
     end
     timeLength=num2str(timeLength);
     imagesc(distMatrix);
@@ -36,6 +47,6 @@ if(nargin>=2) %plot graph and save away
     saveName=['distanceMatrix' name timeLength '.png'];
     saveas(gca,saveName);
     
-    close(h);
+%     close(h);
 end
 end

@@ -12,11 +12,8 @@ numTracks=numel(tracks);
 
 
 mfccList=cell(numTracks,1);
-% h=waitbar(0,'Computing MFCC List...');
 parfor i=1:numTracks
-    % waitbar(i/numTracks);
     filename=fullfile('..','data',folderNames{i},tracks{i});
     mfccList{i}=mfcc(fbank,freqDist(extractSound(filename,timeLength)));
 end
-% close(h);
 end
