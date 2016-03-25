@@ -1,18 +1,19 @@
-function [ coefficients ] = pqmf( inputBuffer )
+function [ coefficients ] = pqmf( inputBuffer,~ )
 %PQMF Implements the analysis filter bank
 %   Takes an input "inputBuffer" that contains an integer number of frames
 %   of audio data. The output array "coefficients" has the same size as the
 %   buffer "inputBuffer", and contains the subband coefficients.
-
-[frameSize,nFrame]=sizer(inputBuffer); % A is size of frame, B is number of frames
-
-if(mod(frameSize,32)~=0)
-    errorStruct.message=['Improperly sized buffer (frame size must be'...
-        'multiple of 32)'];
-    errorStruct.identifier='pqmf:invalidInputSize';
-    error(errorStruct);
+filenameFlag=0;
+if(ischar(inputBuffer)) % I lied, it's actually the filename
+    filenameFlag=1;
+    filename=inputBuffer;
+    info=audioinfo(filename);
+    SampleTime=5;
+    inputBuffer=audioread(filename,[1,(info.SampleRate*SampleTime)]);
 end
-
+totalSamples=length(inputBuffer);
+frameSize=576;
+nFrame=floor(totalSamples/frameSize);
 
 [C,~] = loadwindow(); %C is the analysis window
 %D is the synthesis window, but is not needed
@@ -23,14 +24,15 @@ for k=0:31
         M(k+1,r+1)=cos(((2*k+1)*(r-16)*pi)/64);
     end
 end
-
+% Ns=totalSamples/32;
 bufferSize=512;
 y=zeros(1,64);
 S=zeros(32,1);
-coefficients=zeros(frameSize,nFrame);
+coefficients=zeros(size(inputBuffer));
+packet=1; % counter for inner loop
 for frame = 1:nFrame          % chunk the audio into blocks of 576 samples
     offset = (frame -1)*frameSize+1;  % absolute address of the frame
-    frameTemp=audio(offset:(offset+frameSize));
+    frameTemp=inputBuffer(offset:(offset+frameSize-1));
     Buffer=zeros(size(C));
     for index = 1:18                % 18 non overlapping blocks of size 32
         Buffer(1:bufferSize-32)=Buffer(33:end);
@@ -51,11 +53,21 @@ for frame = 1:nFrame          % chunk the audio into blocks of 576 samples
         % Frequency inversion
         if(mod(index,2)==1)
             channel=1:2:32;
-            S(channel)=-S(channel);
+            S(channel)=-S(channel); % invert odd-numbered frequencies
         end
-        coefficients(((index-1)*32+1):(((index-1)*32)+32),frame)=S;
+        coefficients(packet*(1:32))=S; % Assign coefficients
+        packet=packet+1;
     end % end index=1:18
     
 end % end frame=1:nFrame
-
+if(nargin==2 && filenameFlag)
+    h=figure;
+    [~,name,ext]=fileparts(filename);
+    plot(coefficients);
+    title([name, ext,' pqmf ', num2str(SampleTime) ' seconds']);
+    xlabel('Coefficient');
+    ylabel('Amplitude');
+    saveas(gca,[name,'_',num2str(SampleTime),'sec.png']);
+    close(h);
 end
+end % end function
