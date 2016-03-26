@@ -33,14 +33,14 @@ end
 
 recons=zeros(size(coefficients));
 bufferSize=1024;
-
+V=zeros(1,bufferSize);
 for n = 1:Ns
-    V=zeros(1,bufferSize);
+    
     U=zeros(size(D));
     Sj=zeros(audioSampleSize,1);
     Sk=coefficients(((0:audioSampleSize-1)*Ns)+n); % New subband samples
     V(1:bufferSize-64)=V(65:end); % Shifting
-    V(1:64)=sum(N(1:64,1:audioSampleSize)*Sk); % Matrixing
+    V((bufferSize-64):end)=sum(N*Sk); % Matrixing
     
     for i=0:7 % Build a 512 values vector U
         for j=0:audioSampleSize-1
