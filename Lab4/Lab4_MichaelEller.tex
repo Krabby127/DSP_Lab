@@ -1,0 +1,399 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+
+\documentclass{article} % use larger type; default would be 10pt
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+%%% Examples of Article customizations
+% These packages are optional, depending whether you want the features they provide.
+% See the LaTeX Companion or other references for full information.
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{letterpaper} % or letterpaper (US) or a5paper or....
+ \geometry{margin=1in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
+\usepackage{lipsum}
+%\usepackage{cases}
+\usepackage{graphicx} % support the \includegraphics command and options
+\usepackage{subcaption}
+\usepackage[normalem]{ulem}
+% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+%\usepackage[subsection]{placeins}
+\usepackage{float}
+\usepackage [autostyle, english = american]{csquotes}
+%%% PACKAGES
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+% These packages are all incorporated in the memoir class to one degree or another...
+\usepackage{mcode}
+\usepackage{xfrac}
+\usepackage{lstlinebgrd}
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+\usepackage{mathtools}
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.85}
+
+%%% END Article customizations
+\usepackage{float}
+\usepackage{framed}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{mathabx}
+%%% The "real" document content comes below...
+\newcommand{\includecode}[2][c]{\lstinputlisting[caption=#2, escapechar=, style=custom#1]{#2}<!---->}
+\title{Lab 4}
+\author{Michael Eller}
+\date{March 28, 2016} % Activate to display a given date or no date (if empty),
+         	      % otherwise the current date is printed 
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\clearpage
+\section{Introduction}
+
+During this lab, we will be investigating the implementation of Layer III
+of MPEGG 1, also known as mp3. We will fist develop several subband
+filters to decompose and reconstruct the original audio signal. We will
+be using a polyphase pseudo Quadrature Mirror Filter to deconstruct
+and eventually reconstruct the original audio signal. 
+
+\section{Cosine Modulated Pseudo Quadrature Mirror Filter: Analysis}
+
+In this section, we will manipulate the equations that mathematically
+describe the analysis filter. \\
+
+
+Consider the filter $h_K$, then the output of the combined filtering by $h_k$ and decimation is given by
+
+\begin{equation}
+\label{eq:skn}
+s_k[n]=\sum\limits_{m=0}^{511} h_k[m]x[32n-m]
+\end{equation}
+
+where
+
+\begin{equation}
+\label{eq:hkn2}
+h_k[n]=p_n[n] \cos \left( \frac{(2k+1)(r-16)\pi}{64}\right)
+\quad k=0,\dots,31, \; n=0,\dots,511
+\end{equation}
+
+and $p_0$ is a prototype lowpass filter. The role of $h_k$ is clear: the
+modulation of $p_0$ by $\cos \left( \frac{(2k+1)(r-16)\pi}{64}\right)$ shifts
+the lowpass filter around frequency $(2k+1)\pi/64$. 
+Equation \ref{eq:skn} requires $32 \times 512 = 16,384$ combined multiplications
+and additions to compute the 32 outputs $s_{1},\dots,s_{32}$ for each block
+of 32 samples of the incoming signal. This is simply too slow to be properly
+effective. 
+
+
+
+We define:
+
+\begin{equation}
+\label{eq:cn}
+c[n]=
+\begin{dcases*}
+-p_0[n] & if $[n/64]$ is odd\\
++p_0[n]  & otherwise
+\end{dcases*}
+\end{equation}
+
+
+then
+
+\begin{equation}
+\label{eq:hk}
+h_k[64q+r]=c[64q+r] \, \cos \left( \frac{(2k+1)(r-16)\pi}{64}\right)
+\end{equation}
+
+Using the notations of the standard, we further define
+
+
+\begin{equation}
+\label{eq:mkr}
+\boxed{
+M_{k,r}=\cos \left( \frac{(2k+1)(r-16)\pi}{64}\right), 
+\quad k=0,\dots,31, \; r=0,\dots,63
+}
+\end{equation}
+
+then
+
+\begin{equation}
+h_k[64q+r]=c[64q+r]M_{k,r}
+\end{equation}
+
+and
+
+
+\begin{align}
+s_k[n]&=\sum\limits_{r=0}^{63} \sum\limits_{q=0}^{7} 
+c[64q+r] M_{k,r} x[32n-64q-r]\\ 
+& =  \sum\limits_{r=0}^{63} M_{k,r} \sum\limits_{q=0}^{7} 
+c[64q+r] x[32n-64q-r]
+\end{align}
+
+
+In summary, for every integer $m=32n$, multiple of 32, the convolution from
+equation \ref{eq:skn} can be quickly computed using the following three steps,
+
+\begin{align}
+z[64q+r] &= c[64q+r]x[m-64q-r], &r&=0,\dots,63, \; q=0,\dots,7
+\label{eq:zqr}\\
+y[r]	 &= \sum \limits _{q=0}^{7} z[64q+r], &r&=0,\dots,63 
+\label{eq:yr}\\
+s[k]	 &= \sum \limits _{r=0} ^{63} M_{k,r}\; y[r],  &k&=0,\dots,31
+ \label{eq:sk2}
+\end{align}
+
+Even further speedup can be obtained by using a fast DCT algorithm to compute
+the matrix-vector multiplication in equation \ref{eq:sk2}.
+
+%\begin{equation}
+%\label{eq:KL}
+%KL(G^s,G^{s'})=\frac{1}{2}\left (\text{tr}(\Sigma_{s'}^{-1}\Sigma_s) + (\mu_{s'}-\mu_s)^T \Sigma_{s'}^{-1} (\mu_{s'}-\mu_s)-K+
+%\log\left( \frac{\det \Sigma_{s'}}{\det \Sigma_s} \right) \right )
+%\end{equation}
+
+
+
+
+
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\item Write the MATLAB \verb|pqmf| that implements the analysis filter bank
+described in equations \ref{eq:mkr}-\ref{eq:zqr}. The function will have the following template:
+\\[2ex]
+\verb|[coefficients] = pqmf (input)|
+\\[2ex]
+where \verb|input| is a buffer that contains an integer number of frames
+of audio data. The output array \verb|coefficients| has the same
+size as the buffer \verb|input|, and contains the subband coefficients. 
+\\
+
+The array \verb|coefficients| should be organized in the following manner:
+
+\begin{equation}
+\texttt{coefficients} = 
+\left[ S_{0}[0] \; \dots \; S_{0}[N_S-1] \; 
+\dots S_{31}[0] \; \dots \; S_{31}[N_S-1]\right]
+\end{equation}
+
+where $S_i[k]$ is the coefficient from subband $i=0,\dots,31$ computed
+for the packet $k$ of 32 audio samples. Also $N_S$ is the total number of
+packets of 32 samples:
+
+\begin{equation}
+N_S=\frac{\texttt{Samples}}{32}=18*\texttt{nFrames}
+\end{equation}
+
+The organization of \verb|coefficients| is such that the low frequencies
+come first, and then the next higher frequencies, and so on and so forth. 
+
+\item Analyse the first 5 seconds of the following tracks, and display the
+array \verb|coefficients|,
+
+\begin{itemize}
+\item sample1.wav, sample2.wav
+\item sine1.wav, sine2.wav
+\item handel.wav
+\item cast.wav
+\item gilberto.wav
+\end{itemize}
+
+Comment on the visual content of the arrays \verb|coefficients|.
+\end{enumerate}
+\end{framed}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Figures Question 2
+
+\begin{figure}[H]
+%\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sample1_5sec.png}
+\caption{PQFM: Sample1 5 seconds}
+\label{fig:samp1PQFM}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sample2_5sec.png}
+\caption{PQFM: Sample2 5 seconds}
+\label{fig:samp2PQFM}
+\end{figure}
+%\caption{Samples Files}
+%\end{figure}
+
+\begin{figure}[H]
+
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sine1_1sec.png}
+\caption{PQFM: Sine1}
+\label{fig:sin1PQFM}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sine2_2sec.png}
+\caption{PQFM: Sine2}
+\label{fig:sin2PQFM}
+\end{subfigure}
+\caption{Sine Waves}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{handel_5sec.png}
+\caption{PQFM: Handel 5 seconds}
+\label{fig:handPQFM}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{cast_5sec.png}
+\caption{PQFM: Castanets 5 seconds}
+\label{fig:castPQFM}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{gilberto_5sec.png}
+\caption{PQFM: Gilberto 5 seconds}
+\label{fig:gilbPQFM}
+\end{figure}
+
+%\lipsum{1}
+
+The PQFM coefficients essentially show an outline of the frequency spectrums
+of the various songs. 
+
+As seen in Figure \ref{fig:samp1PQFM}, the extreme lower end of the PQFM
+coefficients are low, while they get larger as you approach coefficient number
+5000. If one listens to the song, it can be easily heard how the piano lacks
+a substantial bass, but the higher notes can be heard more easily. 
+
+Looking at Figure \ref{fig:samp2PQFM}, the lower end of the spectrum is much
+more substantial, as can be heard by the thumping bass in the song. Since the
+music is mostly electronic, it lacks many of the stronger overtones that are
+commonly found on natural classical instruments. As you go even higher in the
+spectrum, the coefficients do not approach zero as quickly as was the case
+in Figure \ref{fig:samp1PQFM}. Perhaps this is due to the inevitable 
+higher-order harmonics that result from electronic music. 
+
+Figures \ref{fig:sin1PQFM} and \ref{fig:sin2PQFM} show the most discernible
+distinctions. The first sine wave is obviously lower than the second because
+of the larger concentration around the lower end of the spectrum. 
+
+Figure \ref{fig:handPQFM} is about the same as Figure \ref{fig:samp1PQFM}. There
+is more activity on the lower end of the spectrum though. This is probably due
+to the fact that "handel.wav" includes vocals as well as piano and violin. 
+
+
+Figure \ref{fig:castPQFM} is quite interesting. While the previous figures had
+a fairly consistent decline as the coefficients increased, this trend
+seems fairly haphazard. Something of considerable note though is that
+this is the first plot to have neighbouring coefficients of unequal magnitude.
+While the other plots were extremely symmetrical about the 0 amplitude point, 
+Figure \ref{fig:castPQFM} is not. Perhaps this is due to the highly percussive
+nature of the castanets and its atonal sounds. 
+
+Gilberto
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%\lstinputlisting[caption=kullbackDistance.m,language=MATLAB,numbers=left,label=ls:KLdm]{./kullbackDistance.m} 
+
+
+
+
+
+%\begin{figure}[H]
+%\begin{subfigure}{0.5\textwidth}
+%\centering
+%\includegraphics[width=\textwidth]{distanceMatrixChroma.png}
+%\caption{Distance Matrix: Chroma}
+%\label{fig:dMatChr}
+%\end{subfigure}
+%\begin{subfigure}{0.5\textwidth}
+%\centering
+%\includegraphics[width=\textwidth]{distanceMatrixMFCC.png}
+%\caption{Distance Matrix: MFCC}
+%\label{fig:dMatChr}
+%\end{subfigure}
+%\end{figure}
+
+
+
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=\textwidth]{genreHistogram.png}
+%\caption{Genre Histograms}
+%\label{fig:genreHisto}
+%\end{figure}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\appendix
+\section{Figures}
+
+\subsection{Distance Matrix}
+\subsubsection{Chroma}
+
+
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=0.75\textwidth]{distanceMatrixChroma30.png}
+%\caption{Distance Matrix Chroma: 30 seconds}
+%\end{figure}
+
+
+%\lstinputlisting[caption=confuseMatrix.m,language=MATLAB,numbers=left]{./confuseMatrix.m} 
+
+
+\end{document}
