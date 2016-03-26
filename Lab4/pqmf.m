@@ -1,8 +1,8 @@
 function [ coefficients ] = pqmf( inputBuffer,~ )
 %PQMF Implements the analysis filter bank
-%   Takes an input "inputBuffer" that contains an integer number of frames
+%   Takes an input "inputBuffers" that contains an integer number of frames
 %   of audio data. The output array "coefficients" has the same size as the
-%   buffer "inputBuffer", and contains the subband coefficients.
+%   buffer "inputBuffers", and contains the subband coefficients.
 filenameFlag=0;
 if(ischar(inputBuffer)) % I lied, it's actually the filename
     filenameFlag=1;
@@ -17,7 +17,7 @@ end
 totalSamples=length(inputBuffer);
 frameSize=576;
 nFrame=floor(totalSamples/frameSize);
-
+inputBuffer=inputBuffer(1:(nFrame*frameSize));
 [C,~] = loadwindow(); %C is the analysis window
 %D is the synthesis window, but is not needed
 
@@ -31,6 +31,7 @@ end
 bufferSize=512;
 y=zeros(1,64);
 S=zeros(32,1);
+
 coefficients=zeros(size(inputBuffer));
 packet=1; % counter for inner loop
 for frame = 1:nFrame          % chunk the audio into blocks of 576 samples

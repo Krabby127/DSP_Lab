@@ -90,7 +90,8 @@ In this section, we will manipulate the equations that mathematically
 describe the analysis filter. \\
 
 
-Consider the filter $h_K$, then the output of the combined filtering by $h_k$ and decimation is given by
+Consider the filter $h_K$, then the output of the combined filtering by $h_k$
+and decimation is given by
 
 \begin{equation}
 \label{eq:skn}
@@ -191,7 +192,8 @@ the matrix-vector multiplication in equation \ref{eq:sk2}.
 \textbf{Assignment}
 \begin{enumerate}
 \item Write the MATLAB \verb|pqmf| that implements the analysis filter bank
-described in equations \ref{eq:mkr}-\ref{eq:zqr}. The function will have the following template:
+described in equations \ref{eq:mkr}-\ref{eq:zqr}. The function will have the
+following template:
 \\[2ex]
 \verb|[coefficients] = pqmf (input)|
 \\[2ex]
@@ -233,6 +235,12 @@ array \verb|coefficients|,
 Comment on the visual content of the arrays \verb|coefficients|.
 \end{enumerate}
 \end{framed}
+
+The MATLAB code used to implement the \verb|pqmf| function can be seen below
+in Listing \ref{ls:pqmf}.  
+
+\lstinputlisting[caption=pqmf.m,language=MATLAB,numbers=left,label=ls:pqmf]
+{./pqmf.m} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Figures Question 2
 
@@ -292,7 +300,8 @@ Comment on the visual content of the arrays \verb|coefficients|.
 \label{fig:gilbPQFM}
 \end{figure}
 
-%\lipsum{1}
+
+
 
 The PQFM coefficients essentially show an outline of the frequency spectrums
 of the various songs. 
@@ -327,7 +336,13 @@ While the other plots were extremely symmetrical about the 0 amplitude point,
 Figure \ref{fig:castPQFM} is not. Perhaps this is due to the highly percussive
 nature of the castanets and its atonal sounds. 
 
-Gilberto
+In Figure \ref{fig:gilbPQFM}, you see a combination of Figures \ref{fig:handPQFM}
+and \ref{fig:castPQFM}. In place of the castanets, we have the Brazilian 
+tamborim. While it has a tonal center, when the tamborim is struck in rapid
+succession it produces a much noisier sound that lacks a discernible tonal
+center. The applause at the beginning of the song also adds some noisiness
+that can be seen in Figure \ref{fig:gilbPQFM} by the large spikes at seemingly
+random intervals. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

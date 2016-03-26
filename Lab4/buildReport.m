@@ -1,5 +1,5 @@
 %build everything necessary for report
-clear filename song Xk mfccp specHistogram sim ARm NPCP;
+clear filename tracks;
 close all;
 tracks=setupFiles();
 parfor i=1:length(tracks)
