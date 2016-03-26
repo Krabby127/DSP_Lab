@@ -9,6 +9,9 @@ if(ischar(inputBuffer)) % I lied, it's actually the filename
     filename=inputBuffer;
     info=audioinfo(filename);
     SampleTime=5;
+    if(SampleTime>info.Duration)
+        SampleTime=info.Duration;
+    end
     inputBuffer=audioread(filename,[1,(info.SampleRate*SampleTime)]);
 end
 totalSamples=length(inputBuffer);
