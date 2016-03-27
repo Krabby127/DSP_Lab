@@ -27,7 +27,7 @@ for k=0:31
         M(k+1,r+1)=cos(((2*k+1)*(r-16)*pi)/64);
     end
 end
-% Ns=totalSamples/32;
+Ns=18*nFrame;
 bufferSize=512;
 y=zeros(1,64);
 S=zeros(32,1);
@@ -59,11 +59,17 @@ for frame = 1:nFrame          % chunk the audio into blocks of 576 samples
             channel=1:2:32;
             S(channel)=-S(channel); % invert odd-numbered frequencies
         end
-        coefficients(packet*(1:32))=S; % Assign coefficients
+        % Spaced Ns apart
+        coefficients(packet+(Ns*(0:31)))=S; % Assign coefficients
+        
         packet=packet+1;
     end % end index=1:18
-    
 end % end frame=1:nFrame
+
+coefficients=coefficients/max(coefficients); % Normalize
+
+
+
 if(nargin==2 && filenameFlag)
     h=figure;
     [~,name,ext]=fileparts(filename);
@@ -72,6 +78,6 @@ if(nargin==2 && filenameFlag)
     xlabel('Coefficient');
     ylabel('Amplitude');
     saveas(gca,[name,'_',num2str(SampleTime),'sec.png']);
-    close(h);
+%     close(h);
 end
 end % end function

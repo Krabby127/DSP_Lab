@@ -33,5 +33,16 @@ end
 
 
 %% Just for testing
+close all;
 filename=fullfile('lab4-data','sine1.wav');
 info=audioinfo(filename);
+[~,name,ext]=fileparts(filename);
+coefficients=pqmf(filename);
+recons=ipqmf(coefficients);
+hold on;
+plot(recons((1:1024)+490-1));%% trial and error
+audio=audioread(filename);
+plot(audio(1:1024));
+legend('Reconstructed','Original');
+title({'Original vs Reconstructed',name});
+hold off;

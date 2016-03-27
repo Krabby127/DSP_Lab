@@ -1,78 +1,90 @@
-function [ recons ] = ipqmf( coefficients,filename)
+function [ recons ] = ipqmf( coefficients,filename,~)
 %ipqmf Reconstructs the audio data
 %   "coefficients" is a buffer that contains the coefficients as computed
 %   by pqmf. The output array "recons" has the same size as the buffer
 %   "coefficients", and contains the reconstructed audio data.
 
-narginchk(1,2);
+%% Validate input
+narginchk(1,3);
 frameSize=576;
 if(mod(length(coefficients),frameSize)~=0)
     error('ipqmf:invalidInputSize',...
         ['Invalid size for ''coefficients''.'...
         ' Length must be multiple of %d.'],frameSize);
 end
-for i=1:length(coefficients)
-    if(mod(i,2)==0)
-        coefficients(i)=-coefficients(i);
-    end
-end
+%% Setup
 audioSampleSize=32;
+processingSize=64;
+bufferSize=1024;
 Ns=length(coefficients)/audioSampleSize;
 % Because multiple of 576, Ns will be an integer
-
-[~,D] = loadwindow(); %C is the analysis window, but is not needed
-%D is the synthesis window
-processingSize=64;
 N=zeros(processingSize,audioSampleSize);
-
 for i=0:processingSize-1
     for k=0:audioSampleSize-1
         N(i+1,k+1)=cos(((2*k+1)*(16+i)*pi)/64);
     end
 end
 
-recons=zeros(size(coefficients));
-bufferSize=1024;
-V=zeros(1,bufferSize);
-for n = 1:Ns
-    
+coefficients=buffer(coefficients,Ns); % Matrix is easier
+[~,D] = loadwindow(); %C is the analysis window, but is not needed
+%D is the synthesis window
+
+%% Init vars
+recons=zeros(audioSampleSize,Ns);
+Buffer=zeros(bufferSize,1);
+
+%% Do the magic
+for packet = 1:Ns
     U=zeros(size(D));
-    Sj=zeros(audioSampleSize,1);
-    Sk=coefficients(((0:audioSampleSize-1)*Ns)+n); % New subband samples
-    V(1:bufferSize-64)=V(65:end); % Shifting
-    for i=0:processingSize-1
-        V((bufferSize-64):end)=sum((N((i+1),:)').*Sk); % Matrixing
+    S=coefficients(packet,:); % extract subband
+    if (mod(packet,2) == 1) % Act on every other packet
+        channel = 1:2:32; % Invert every other coefficent
+        S(channel) = -S(channel); % Invert coefficent
     end
-    for i=0:7 % Build a 512 values vector U
-        for j=0:audioSampleSize-1
-            U(i*64+j+1)=V(i*128+j+1);
-            U(i*64+32+j+1)=V(i*128+96+j+1);
-        end % end i=0:7
-    end % end j=0:audioSampleSize-1
-    W=D.*U; % Windows by 512 coefficients
+    %% Shift Buffer
+    Buffer((processingSize+1):bufferSize)=...
+        Buffer(1:(bufferSize-processingSize));
+    for i=0:processingSize-1
+        Buffer(i+1) = sum(N(i+1,:).*S);
+    end
+    %% DSP Magic
+    j=0:(audioSampleSize-1);
+    for i=0:7
+        U(i*64+j+1) = Buffer(i*128+j+1); % DSP magic
+        U(i*64+32+j+1) = Buffer(i*128+96+j+1); % DSP magic
+    end
+    W=U.*D; % Windows by 512 coefficients
     
     for j=0:audioSampleSize-1 % Calculate 32 samples
-        Sj(j+1)=sum(W(j+(audioSampleSize*(0:15))+1));
+        recons(j+1,packet) = sum(W((j+1) + audioSampleSize*(0:15)));
     end
-    % Output 32 reconstructed PCM samples
-    recons((0:audioSampleSize-1)+(n*audioSampleSize)+1)=Sj;
-    
 end
+% Output 32 reconstructed PCM samples
+recons=recons(:); % Change back to vector
+recons=recons/max(recons); % Normalize it
 
-recons=recons/(max(recons)*1.1); % Normalize it
-if(nargin==2)
+%% Plot the magic
+if(nargin > 1)
     h=figure;
     hold on;
     audio=audioread(filename);
-    plot(audio(1:1024));
-    [~,name,ext]=fileparts(filename);
-    plot(recons(1:1024));
-    title([name, ext, ' ipqmf Reconstruction (first 1024 samples)']);
+    plot(audio(1:length(recons)));
     xlabel('Samples');
     ylabel('Amplitude');
-    legend('True audio','Reconstructed');
-    saveas(h,[name,'_ipqmf.png']);
+    [~,name,ext]=fileparts(filename);
+    if(nargin == 2)
+        plot(recons);
+        title([name, ext, ' ipqmf Reconstruction']);
+        legend('True audio','Reconstructed');
+        saveas(h,[name,'_ipqmf.png']);
+    end
+    if(nargin == 3)
+        plot(recons(489:end));
+        title({[name, ext, ' ipqmf Reconstruction'],'Delay Fixed'});
+        legend('True audio','Reconstructed (Fixed for delay)');
+        saveas(h,[name,'_D_ipqmf.png']);
+    end
     hold off;
-    close(h);
+    %     close(h);
 end
 end

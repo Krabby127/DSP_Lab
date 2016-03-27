@@ -303,29 +303,34 @@ in Listing \ref{ls:pqmf}.
 
 
 
-The PQFM coefficients essentially show an outline of the frequency spectrums
-of the various songs. 
+The PQFM coefficients essentially show an outline of the frequency
+spectrum of the various songs. 
 
 As seen in Figure \ref{fig:samp1PQFM}, the extreme lower end of the PQFM
-coefficients are low, while they get larger as you approach coefficient number
-5000. If one listens to the song, it can be easily heard how the piano lacks
-a substantial bass, but the higher notes can be heard more easily. 
+coefficients are low, while they get larger as you approach coefficient
+number 5000. If one listens to the song, it can be easily heard how the
+piano lacks a substantial bass, but the higher notes can be heard more
+easily. 
 
-Looking at Figure \ref{fig:samp2PQFM}, the lower end of the spectrum is much
-more substantial, as can be heard by the thumping bass in the song. Since the
-music is mostly electronic, it lacks many of the stronger overtones that are
-commonly found on natural classical instruments. As you go even higher in the
-spectrum, the coefficients do not approach zero as quickly as was the case
-in Figure \ref{fig:samp1PQFM}. Perhaps this is due to the inevitable 
-higher-order harmonics that result from electronic music. 
+Looking at Figure \ref{fig:samp2PQFM}, the lower end of the spectrum is
+much more substantial, as can be heard by the thumping bass in the song.
+Since the music is mostly electronic, it lacks many of the stronger
+overtones that are commonly found on natural classical instruments. As you
+go even higher in the spectrum, the coefficients do not approach zero as
+quickly as was the case in Figure \ref{fig:samp1PQFM}. Perhaps this is due
+to the inevitable higher-order harmonics that result from electronic
+music. 
 
-Figures \ref{fig:sin1PQFM} and \ref{fig:sin2PQFM} show the most discernible
-distinctions. The first sine wave is obviously lower than the second because
-of the larger concentration around the lower end of the spectrum. 
+Figures \ref{fig:sin1PQFM} and \ref{fig:sin2PQFM} show the most
+discernible distinctions. The first sine wave is obviously lower than the
+second because of the larger concentration around the lower end of the
+spectrum. 
 
-Figure \ref{fig:handPQFM} is about the same as Figure \ref{fig:samp1PQFM}. There
-is more activity on the lower end of the spectrum though. This is probably due
-to the fact that "handel.wav" includes vocals as well as piano and violin. 
+Figure \ref{fig:handPQFM} is about the same as Figure \ref{fig:samp1PQFM}.
+There
+is more activity on the lower end of the spectrum though. This is probably
+due to the fact that "handel.wav" includes vocals as well as piano and
+violin. 
 
 
 Figure \ref{fig:castPQFM} is quite interesting. While the previous figures had
@@ -396,6 +401,140 @@ N_{i,k}=\cos \left( \frac{(2k+1)(16+i)\pi}{64}\right),
 
 %\lstinputlisting[caption=kullbackDistance.m,language=MATLAB,numbers=left,label=ls:KLdm]{./kullbackDistance.m} 
 
+\begin{framed}
+\textbf{Assignment}
+\begin{enumerate}
+\setcounter{enumi}{2}
+\item Write the MATLAB function \verb|ipqmf| that implements the synthesis
+filter bank described in equations \ref{eq:Nisk}-\ref{eq:nik}. 
+The function will have the following template:
+\\[2ex]
+\verb|[recons] = ipqmf (coefficients)|
+\\[2ex]
+
+where \texttt{coefficients} is a buffer that contains the coefficients
+computed by \texttt{pqmf}. The output array \texttt{recons} has the same
+size as the buffer \texttt{coefficients}, and contains the reconstructed
+audio data.
+
+\item Reconstruct the first 5 seconds of the following tracks, and display
+the signal \texttt{input}. You should observe that the reconstructed
+signal is slightly delayed. This is due to the fact that the processing
+assumes that a buffer of 512 audio samples is immediately available.
+
+\begin{itemize}
+\item sample1.wav, sample2.wav
+\item sine1.wav, sine2.wav
+\item handle.wav
+\item gilberto.wav
+\end{itemize}
+
+\item Compute the maximum error between the reconstructed signal and the
+original, taking into account the delay. The error should be no more than
+$10^{-5}$. Explain how you estimate the delay. 
+
+\end{enumerate}
+\end{framed}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Figures Question 2
+
+\begin{figure}[H]
+%\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sample1_5sec.png}
+\caption{PQMF: Sample1 5 seconds}
+\label{fig:samp1PQMF}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sample2_5sec.png}
+\caption{PQMF: Sample2 5 seconds}
+\label{fig:samp2PQMF}
+\end{figure}
+%\caption{Samples Files}
+%\end{figure}
+
+\begin{figure}[H]
+
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sine1_ipqmf.png}
+\caption{IPQMF: Sine1}
+\label{fig:sin1IQMF}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sine2_ipqmf.png}
+\caption{IPQMF: Sine2}
+\label{fig:sin2IQMF}
+\end{subfigure}
+\caption{Sine Waves}
+\end{figure}
+ 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{handel_ipqmf.png}
+\caption{IPQMF: Handel 5 seconds}
+\label{fig:handIQMF}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{cast_ipqmf.png}
+\caption{PQMF: Castanets 5 seconds}
+\label{fig:castIQMF}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{gilberto_ipqmf.png}
+\caption{PQMF: Gilberto 5 seconds}
+\label{fig:gilbIQMF}
+\end{figure}
+
+\lstinputlisting[caption=ipqmf.m,language=MATLAB,numbers=left,label=ls:ipqmf]
+{./ipqmf.m} 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Question 6
+\begin{framed}
+\begin{enumerate}
+\setcounter{enumi}{5}
+\item Modify your code to reconstruct an audio signal using only a subset
+of bands. This is the beginning of compression. Your function prototype
+should look like this: 
+\\[2ex]
+\verb|[recons] = ipqmf (coefficients, thebands)|
+\\[2ex]
+
+where \verb|thebands| is an array of 32 integers, such that
+\verb|thebands[i] =1| if band $i$ is used in the reconstruction, and
+\verb|thebands[i] =0| if band $i$ is not used. 
+
+Experiment with the files
+
+\begin{itemize}
+\item sample1.wav, sample2.wav
+\item sine1.wav, sine2.wav
+\item handel.wav
+\item cast.wav
+\item gilberto.wav
+\end{itemize}
+
+and describe the outcome of the experiments, when the certain bands are
+not used to reconstruct. If you describe the compression ratio as
+
+\begin{equation}
+\frac{\texttt{number of bands used to reconstruct}}{32}
+\end{equation}
+
+explain what is a good compression ratio, and a good choice of bands for
+each audio sample. Note that the psychoacoustic model of MP3 performs
+this task automatically. 
+\end{enumerate}
+\end{framed}
 
 
 
