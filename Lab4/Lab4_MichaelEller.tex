@@ -348,17 +348,51 @@ random intervals.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+\section{Cosine Modulated Pseudo Quadrature Mirror Filter: Synthesis}
+
+The synthesis, or reconstruction, from the coefficients is performed
+in a very similar manner. The following equations yield the reconstruction
+of 32 audio samples from 32 subband coefficients
+
+\begin{align}
+\label{eq:vshift}
+\texttt{for } i=1023 \texttt{ down to } 64 \texttt{ do}\nonumber \\
+v[i]=v[i-64]
+\end{align}
+
+\begin{align}
+\label{eq:Nisk}
+\texttt{for } i=63 \texttt{ down to } 0 \texttt{ do} \nonumber \\
+v[i]=\sum\limits_{k=0}^{31} N_{i,k} \; s[k]
+\end{align}
+
+\begin{alignat}{2}
+\texttt{for } i=&0 \texttt{ to } 7 \texttt{ do} \nonumber \\
+\texttt{for } &j=0 \texttt{ to } 31 \texttt{ do} \nonumber \\
+& u[64i+j] &=&v[128i+j] \label{eq:ushift1}\\
+& u[64i+j+32] &= &v[128i+j+96]\label{eq:ushift2} 
+\end{alignat}
 
 
+\begin{align}
+\texttt{for } i=0 \texttt{ to } 511 \texttt{ do} \nonumber \\
+w[i]=d[i] u[i] \label{eq:wi}
+\end{align}
 
+\begin{align}
+\texttt{for } j=0 \texttt{ to } 31 \texttt{ do} \nonumber \\
+x[j]=\sum\limits_{j=0}^{15} w[j+32i] \label{eq:xj}
+\end{align}
 
+where
 
-
-
-
-
-
-
+\begin{equation}
+\label{eq:nik}
+\boxed{
+N_{i,k}=\cos \left( \frac{(2k+1)(16+i)\pi}{64}\right), 
+\quad i=0,\dots,63, \; k=0,\dots,31
+}
+\end{equation}
 
 %\lstinputlisting[caption=kullbackDistance.m,language=MATLAB,numbers=left,label=ls:KLdm]{./kullbackDistance.m} 
 
