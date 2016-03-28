@@ -13,7 +13,10 @@ if(ischar(inputBuffer)) % I lied, it's actually the filename
         SampleTime=info.Duration;
     end
     inputBuffer=audioread(filename,[1,(info.SampleRate*SampleTime)]);
+    % Remove opening silence
+    inputBuffer=inputBuffer(find(inputBuffer~=0,1):end);
 end
+
 totalSamples=length(inputBuffer);
 frameSize=576;
 nFrame=floor(totalSamples/frameSize);
@@ -78,6 +81,6 @@ if(nargin==2 && filenameFlag)
     xlabel('Coefficient');
     ylabel('Amplitude');
     saveas(gca,[name,'_',num2str(SampleTime),'sec.png']);
-%     close(h);
+    close(h);
 end
 end % end function
