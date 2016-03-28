@@ -25,24 +25,44 @@ close(h);
 
 
 %% Runs through all the files
-parfor i=1:length(tracks)
+len=length(tracks);
+totalError=zeros(len,1);
+totalError1=zeros(len,1);
+subbands=zeros(1,32);
+subbands(1:6)=1; % As can be seen in the Pan95-mpega.pdf
+parfor i=1:len
     filename=tracks{i};
     coefficients=pqmf(filename,1);
-    ipqmf(coefficients,filename);
+    [~,totalError1(i)]=ipqmf(coefficients,subbands,filename,1);
+    [~,totalError(i)]=ipqmf(coefficients,filename,1);
+    
 end
 
+songNames='';
+for i=1:len
+    [~,name,~]=fileparts(tracks{i});
+    songNames=[songNames ' ' name];
+end
+songNames(1)=[]; % Remove extra space
 
-%% Just for testing
-close all;
-filename=fullfile('lab4-data','sine1.wav');
-info=audioinfo(filename);
-[~,name,ext]=fileparts(filename);
-coefficients=pqmf(filename);
-recons=ipqmf(coefficients);
-hold on;
-plot(recons((1:1024)+490-1));%% trial and error
-audio=audioread(filename);
-plot(audio(1:1024));
-legend('Reconstructed','Original');
-title({'Original vs Reconstructed',name});
-hold off;
+h=figure;
+bar(totalError);
+title('Total Error');
+xlabel('Track');
+ylabel('Error Difference');
+ax=gca;
+axis([-inf inf 0 max(totalError)*1.025]);
+ax.XTickLabel=strsplit(songNames);
+saveas(h,'totalError.png');
+close(h);
+
+h=figure;
+bar(totalError1);
+title({'Total Error','Specialized Subbands'});
+xlabel('Track');
+ylabel('Error Difference');
+ax=gca;
+axis([-inf inf 0 max(totalError)*1.025]);
+ax.XTickLabel=strsplit(songNames);
+saveas(h,'totalError1.png');
+close(h);

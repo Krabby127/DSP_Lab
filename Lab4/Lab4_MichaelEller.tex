@@ -245,7 +245,6 @@ in Listing \ref{ls:pqmf}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Figures Question 2
 
 \begin{figure}[H]
-%\begin{subfigure}{0.5\textwidth}
 \centering
 \includegraphics[width=\textwidth]{sample1_5sec.png}
 \caption{PQFM: Sample1 5 seconds}
@@ -257,8 +256,7 @@ in Listing \ref{ls:pqmf}.
 \caption{PQFM: Sample2 5 seconds}
 \label{fig:samp2PQFM}
 \end{figure}
-%\caption{Samples Files}
-%\end{figure}
+
 
 \begin{figure}[H]
 
@@ -439,20 +437,18 @@ $10^{-5}$. Explain how you estimate the delay.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Figures Question 2
 
 \begin{figure}[H]
-%\begin{subfigure}{0.5\textwidth}
 \centering
-\includegraphics[width=\textwidth]{sample1_5sec.png}
-\caption{PQMF: Sample1 5 seconds}
+\includegraphics[width=\textwidth]{sample1_ipqmf.png}
+\caption{PQMF: Sample1 IPQMF}
 \label{fig:samp1PQMF}
 \end{figure}
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{sample2_5sec.png}
-\caption{PQMF: Sample2 5 seconds}
+\includegraphics[width=\textwidth]{sample2_ipqmf.png}
+\caption{PQMF: Sample2 IPQMF}
 \label{fig:samp2PQMF}
 \end{figure}
-%\caption{Samples Files}
-%\end{figure}
+
 
 \begin{figure}[H]
 
@@ -469,6 +465,7 @@ $10^{-5}$. Explain how you estimate the delay.
 \label{fig:sin2IQMF}
 \end{subfigure}
 \caption{Sine Waves}
+\label{fig:sinIPQMF}
 \end{figure}
  
 
@@ -494,8 +491,25 @@ $10^{-5}$. Explain how you estimate the delay.
 \label{fig:gilbIQMF}
 \end{figure}
 
+
+As can be seen cleary in figures \ref{fig:sinIPQMF}-\ref{fig:gilbIQMF}, there are some obvious problems with the reconstruction, but
+nonetheless the general form of the reconstruction follows the original audio. After a careful analysis of the issue, it could be seen that
+there are very slight differences in the PQMF plot(s). While I originally tried a very systematic manner for computing the delay
+between the original signal and the reconstruction, I eventually found it to be just as effective to view the delay visually from
+a plot showing the original and the reconstruction. Reading through ``Pan95-mega.pdf'' reveals that 
+\emph{The net offset is 320 points to time-align the psychoacoustic model data with the filter bank outputs}. This number
+doesn't produce a good result though, so I stick with my experimental value instead. 
+
+
 \lstinputlisting[caption=ipqmf.m,language=MATLAB,numbers=left,label=ls:ipqmf]
 {./ipqmf.m} 
+
+
+To compute the error between the original audio and the reconstruction, I simply added a slight bit on the end of my \verb|buildReport.m| file
+as can be seen in Listing \ref{ls:totalError}.
+
+
+\lstinputlisting[caption=buildReport.m,language=MATLAB,numbers=left,firstline=41,firstnumber=41,label=ls:totalError]{./buildReport.m}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Question 6
@@ -537,32 +551,33 @@ this task automatically.
 \end{framed}
 
 
+After modifying the \verb|ipqmf| function, I used bands 1 through 7 and computed the reconstruction. 
+Surprisingly, as can be seen in Figure \ref{fig:totErr}, the error is actually decreased. So far, this only
+means that my reconstruction is so bad that no results are better than what I have. Further improvements
+will lead to a more expected result. An expected result would be that the error increases as less bands are used. 
+Right now, I have a compression rate of $6/32$ but that doesn't matter until my output is actually correct. 
+
+The psychoacoustic model is designed so that frequencies that have lower bark values (similar to the mel values
+computed in Lab 1) do not need to be included in the subband calculation. 
 
 
-%\begin{figure}[H]
-%\begin{subfigure}{0.5\textwidth}
-%\centering
-%\includegraphics[width=\textwidth]{distanceMatrixChroma.png}
-%\caption{Distance Matrix: Chroma}
-%\label{fig:dMatChr}
-%\end{subfigure}
-%\begin{subfigure}{0.5\textwidth}
-%\centering
-%\includegraphics[width=\textwidth]{distanceMatrixMFCC.png}
-%\caption{Distance Matrix: MFCC}
-%\label{fig:dMatChr}
-%\end{subfigure}
-%\end{figure}
+\begin{figure}[H]
 
-
-
-%\begin{figure}[H]
-%\centering
-%\includegraphics[width=\textwidth]{genreHistogram.png}
-%\caption{Genre Histograms}
-%\label{fig:genreHisto}
-%\end{figure}
-
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{totalError.png}
+\caption{Total Error}
+\label{fig:totErr0}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{totalError1.png}
+\caption{Total Error (specialized subbands)}
+\label{fig:totErr1}
+\end{subfigure}
+\caption{Total Errors}
+\label{fig:totErr}
+\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -570,18 +585,275 @@ this task automatically.
 \appendix
 \section{Figures}
 
-\subsection{Distance Matrix}
-\subsubsection{Chroma}
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{PQMF Models}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sample1_5sec.png}
+\caption{PQFM: Sample1 5 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sample2_5sec.png}
+\caption{PQFM: Sample2 5 seconds}
+\end{figure}
 
 
-%\begin{figure}[H]
-%\centering
-%\includegraphics[width=0.75\textwidth]{distanceMatrixChroma30.png}
-%\caption{Distance Matrix Chroma: 30 seconds}
-%\end{figure}
+\begin{figure}[H]
+
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=0.8\textwidth]{sine1_1sec.png}
+\caption{PQFM: Sine1}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=0.8\textwidth]{sine2_2sec.png}
+\caption{PQFM: Sine2}
+\end{subfigure}
+\caption{Sine Waves}
+\end{figure}
 
 
-%\lstinputlisting[caption=confuseMatrix.m,language=MATLAB,numbers=left]{./confuseMatrix.m} 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{handel_5sec.png}
+\caption{PQFM: Handel 5 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{cast_5sec.png}
+\caption{PQFM: Castanets 5 seconds}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{gilberto_5sec.png}
+\caption{PQFM: Gilberto 5 seconds}
+\end{figure}
+%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{IPQMF Models}
+\subsubsection{Normal}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sample1_ipqmf.png}
+\caption{PQMF: Sample1 IPQMF}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sample2_ipqmf.png}
+\caption{PQMF: Sample2 IPQMF}
+\end{figure}
+
+
+\begin{figure}[H]
+
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sine1_ipqmf.png}
+\caption{IPQMF: Sine1}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sine2_ipqmf.png}
+\caption{IPQMF: Sine2}
+\end{subfigure}
+\caption{Sine Waves}
+\end{figure}
+ 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{handel_ipqmf.png}
+\caption{IPQMF: Handel 5 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{cast_ipqmf.png}
+\caption{PQMF: Castanets 5 seconds}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{gilberto_ipqmf.png}
+\caption{PQMF: Gilberto 5 seconds}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Delay Fixed}
+
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sample1_D_ipqmf.png}
+\caption{PQMF: Sample1 IPQMF}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sample2_D_ipqmf.png}
+\caption{PQMF: Sample2 IPQMF}
+\end{figure}
+
+
+\begin{figure}[H]
+
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sine1_D_ipqmf.png}
+\caption{IPQMF: Sine1}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sine2_D_ipqmf.png}
+\caption{IPQMF: Sine2}
+\end{subfigure}
+\caption{Sine Waves}
+\end{figure}
+ 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{handel_D_ipqmf.png}
+\caption{IPQMF: Handel 5 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{cast_D_ipqmf.png}
+\caption{PQMF: Castanets 5 seconds}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{gilberto_D_ipqmf.png}
+\caption{PQMF: Gilberto 5 seconds}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Delay Fixed Zoomed}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sample1_D1024_ipqmf.png}
+\caption{PQMF: Sample1 IPQMF}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sample2_D1024_ipqmf.png}
+\caption{PQMF: Sample2 IPQMF}
+\end{figure}
+
+
+\begin{figure}[H]
+
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sine1_D1024_ipqmf.png}
+\caption{IPQMF: Sine1}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sine2_D1024_ipqmf.png}
+\caption{IPQMF: Sine2}
+\end{subfigure}
+\caption{Sine Waves}
+\end{figure}
+ 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{handel_D1024_ipqmf.png}
+\caption{IPQMF: Handel 5 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{cast_D1024_ipqmf.png}
+\caption{PQMF: Castanets 5 seconds}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{gilberto_D1024_ipqmf.png}
+\caption{PQMF: Gilberto 5 seconds}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Delay Fixed: Specialized Subband (Zoomed)}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sample1_DS1024_ipqmf.png}
+\caption{PQMF: Sample1 IPQMF}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sample2_DS1024_ipqmf.png}
+\caption{PQMF: Sample2 IPQMF}
+\end{figure}
+
+
+\begin{figure}[H]
+
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sine1_DS1024_ipqmf.png}
+\caption{IPQMF: Sine1}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{sine2_DS1024_ipqmf.png}
+\caption{IPQMF: Sine2}
+\end{subfigure}
+\caption{Sine Waves}
+\end{figure}
+ 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{handel_DS1024_ipqmf.png}
+\caption{IPQMF: Handel 5 seconds}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{cast_DS1024_ipqmf.png}
+\caption{PQMF: Castanets 5 seconds}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{gilberto_DS1024_ipqmf.png}
+\caption{PQMF: Gilberto 5 seconds}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Listings}
+
+\lstinputlisting[caption=pqmf.m,language=MATLAB,numbers=left]
+{./pqmf.m} 
+
+\lstinputlisting[caption=ipqmf.m,language=MATLAB,numbers=left]
+{./ipqmf.m} 
+
+\lstinputlisting[caption=buildReport.m,language=MATLAB,numbers=left]
+{./buildReport.m} 
+
 
 
 \end{document}
