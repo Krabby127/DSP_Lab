@@ -20,19 +20,11 @@ if(a~=b)
     error('''luminance'' must be a square matrix');
 end
 
+%% Process using "blockProc"
 
-% coeffProcess(a);
-% fun = @(block_struct) coeffProcess(args);
-
-% B = blockproc(luminance,[8,8],fun,'UseParallel',1)
-
+fun = @(block_struct) dct2(block_struct.data);
+B = blockproc(luminance,[8,8],fun,'UseParallel',1);
 
 
-end
-
-%% Helper function for anonymous function handle
-function [F] = coeffProcess(subMatrix)
-Cu=[(1/sqrt(2)),1,1,1,1,1,1,1];
-Cv=Cu;
 
 end
