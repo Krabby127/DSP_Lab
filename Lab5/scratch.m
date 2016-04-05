@@ -22,3 +22,5 @@ ind(:,1:2:end) = flipud( ind(:,1:2:end) );  %# reverse order of odd columns
 ind(ind==0) = [];                           %# keep non-zero indices
 
 M(ind)                                      %# get elements in zigzag order
+
+% https://stackoverflow.com/questions/3024939/matrix-zigzag-reordering
