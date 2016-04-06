@@ -27,8 +27,10 @@ fun = @(block_struct) dct2(block_struct.data);
 temp = blockproc(luminance,[8,8],fun,'UseParallel',1);
 % Divides into N_blocks cells of size [8x8]
 temp2=mat2cell(temp,repmat(8,1,a/8),repmat(8,1,b/8));
-% Creates a vector of N_blocks cells of size [64x1]
+% Creates a vector of N_blocks many cells of size [64x1]
 y=cellfun(@toZigzag,temp2,'UniformOutput',false);
-
-
+% F(a,:)=y{a}
+F=cell2mat(y);
+% Computes the DC component
+coeff=diff([0,F(1,:)]);
 end
