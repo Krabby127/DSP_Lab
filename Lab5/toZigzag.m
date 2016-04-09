@@ -40,3 +40,5 @@ for s=row+1:2*row-1
     end;
     flip=flip+1;
 end;
+y=y';
+end

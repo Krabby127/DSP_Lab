@@ -21,16 +21,22 @@ if(a~=b)
 end
 
 %% Process using "blockProc"
-
 fun = @(block_struct) dct2(block_struct.data);
 % Output is same size as input
 temp = blockproc(luminance,[8,8],fun,'UseParallel',1);
+
+%% Reconstruct to desired shape
 % Divides into N_blocks cells of size [8x8]
-temp2=mat2cell(temp,repmat(8,1,a/8),repmat(8,1,b/8));
+% Each cell in temp2 is one 8x8 block
+temp2=mat2cell(temp,repmat(8,1,a/8),repmat(8,1,b/8)); % Same as 'temp'
 % Creates a vector of N_blocks many cells of size [64x1]
-y=cellfun(@toZigzag,temp2,'UniformOutput',false);
-% F(a,:)=y{a}
-F=cell2mat(y);
+y=cellfun(@toZigzag,temp2,'UniformOutput',false); 
+% y(:)=(y(:))';
+% Resizes from a/8,b/8 to (a/8)*(b/8)
+y=y(:);
+% F(:,a)=y{a}
+coeff=cell2mat(y); % Correct
+coeff=coeff';
 % Computes the DC component
-coeff=diff([0,F(1,:)]);
+coeff(1,:)=diff([0,coeff(1,:)]);
 end
