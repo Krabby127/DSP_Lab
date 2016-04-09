@@ -1,4 +1,4 @@
-function [ coeff ] = dctmgr( luminance )
+function [ coeff, temp, temp2, y, coeffTemp ] = dctmgr( luminance )
 %dctmgr Generates JPEG coefficients for given image
 %   Takes a luminance (gray-level) image as an input, divides it into non
 %   overlapping 8x8 blocks, and DCT transforms each block according to
@@ -19,6 +19,8 @@ end
 if(a~=b)
     error('''luminance'' must be a square matrix');
 end
+%% Allow multiple outputs for testing purposes
+nargoutchk(1,5);
 
 %% Process using "blockProc"
 fun = @(block_struct) dct2(block_struct.data);
@@ -30,13 +32,13 @@ temp = blockproc(luminance,[8,8],fun,'UseParallel',1);
 % Each cell in temp2 is one 8x8 block
 temp2=mat2cell(temp,repmat(8,1,a/8),repmat(8,1,b/8)); % Same as 'temp'
 % Creates a vector of N_blocks many cells of size [64x1]
-y=cellfun(@toZigzag,temp2,'UniformOutput',false); 
+y=cellfun(@toZigzag,temp2,'UniformOutput',false);
 % y(:)=(y(:))';
 % Resizes from a/8,b/8 to (a/8)*(b/8)
 y=y(:);
 % F(:,a)=y{a}
-coeff=cell2mat(y); % Correct
-coeff=coeff';
+coeffTemp=cell2mat(y); % Correct
+coeff=coeffTemp';
 % Computes the DC component
 coeff(1,:)=diff([0,coeff(1,:)]);
 end
