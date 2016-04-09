@@ -35,5 +35,5 @@ temp2=temp;
 fun = @(block_struct) idct2(block_struct.data);
 luminance=blockproc(temp,[8,8],fun,'UseParallel',1);
 % Convert to 8 bit unsigned integer
-luminance=typecast(luminance,'uint8');
+luminance=uint8(luminance);
 end
