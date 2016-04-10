@@ -1,5 +1,4 @@
 function [] =plot3Images(luminance,luminance2,filename,lossFactor)
-% close all;
 h=figure;
 
 [~,name,~]=fileparts(filename);
@@ -20,6 +19,6 @@ imshow(k,'border','tight');
 title('Difference');
 
 h.Position=[h.Position(1), h.Position(2), 560,260];
-saveas(h,[name,'L',num2str(lossFactor),'_dct.jpg']);
+saveas(h,[name,'L',num2str(lossFactor),'_dct.png']);
 close(h);
 end
