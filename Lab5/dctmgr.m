@@ -1,4 +1,5 @@
-function [ coeff, temp, temp2, y, coeffTemp ] = dctmgr( luminance )
+function [ coeff, temp, temp2, y, coeffTemp ] = ...
+    dctmgr( luminance,lossFactor )
 %dctmgr Generates JPEG coefficients for given image
 %   Takes a luminance (gray-level) image as an input, divides it into non
 %   overlapping 8x8 blocks, and DCT transforms each block according to
@@ -26,6 +27,10 @@ nargoutchk(1,5);
 fun = @(block_struct) dct2(block_struct.data);
 % Output is same size as input
 temp = blockproc(luminance,[8,8],fun,'UseParallel',1);
+%% Quantization
+Q=QTable();
+fun2= @(block_struct) round(block_struct.data./(lossFactor*Q));
+temp=blockproc(temp,[8,8],fun2,'UseParallel',1);
 
 %% Reconstruct to desired shape
 % Divides into N_blocks cells of size [8x8]

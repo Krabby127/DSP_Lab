@@ -1,4 +1,4 @@
-function [ luminance,F,temp,temp2 ] = idctmgr( coeff )
+function [ luminance,F,temp,temp2 ] = idctmgr( coeff,lossFactor )
 %idctmgr Performs the inverse discrete cosine transform and reconstructs
 
 %% Validate inputs
@@ -15,7 +15,7 @@ end
 %% Allow multiple outputs for testing purposes
 nargoutchk(1,4);
 
-%% Reverse DC Coefficients
+%% Reverse DC Coefficients calculations
 coeff(1,:)=cumsum(coeff(1,:));
 
 %% Reconstruct original matrix shape
@@ -34,6 +34,10 @@ temp2=temp;
 %% Process using "blockProc"
 fun = @(block_struct) idct2(block_struct.data);
 luminance=blockproc(temp,[8,8],fun,'UseParallel',1);
+%% Quantization
+Q=QTable();
+fun2= @(block_struct) (block_struct.data.*lossFactor.*Q);
+luminance=blockproc(luminance,[8,8],fun2,'UseParallel',1);
 % Convert to 8 bit unsigned integer
 luminance=uint8(luminance);
 end
