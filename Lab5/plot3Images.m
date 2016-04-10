@@ -11,7 +11,7 @@ imshow(luminance,'border','tight');
 title('Original Image');
 
 subplot(1,3,3);
-imshow(luminance,'border','tight');
+imshow(luminance2,'border','tight');
 title('Reconstructed image');
 
 k=255-imabsdiff(luminance,luminance2);

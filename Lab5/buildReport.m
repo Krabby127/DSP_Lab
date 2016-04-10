@@ -1,5 +1,6 @@
 %% Build everything necessary for report
-clear filename images;
+clear filename images luminance luminance 2 lossFactors lumArray coeff ...
+    tot len lossFac;
 close all;
 images=setupFiles();
 
