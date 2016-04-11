@@ -1,5 +1,4 @@
-function [ coeff, temp, temp2, y, coeffTemp ] = ...
-    dctmgr( luminance,lossFactor )
+function [ coeff,compressionRatio ] = dctmgr( luminance,lossFactor )
 %dctmgr Generates JPEG coefficients for given image
 %   Takes a luminance (gray-level) image as an input, divides it into non
 %   overlapping 8x8 blocks, and DCT transforms each block according to
@@ -12,6 +11,9 @@ function [ coeff, temp, temp2, y, coeffTemp ] = ...
 %   coeff(1,1)=F_1(1,1); coeff(1,2)=F_2(1,1)-F_1(1,1);
 %   where F_i(1,1) is the zero frequency DCT coefficient of block i
 
+%% Check number of outputs
+nargoutchk(1,2);
+
 %% Validate input
 [a,b]=size(luminance);
 if(mod(a,8)||mod(b,8))
@@ -20,8 +22,6 @@ end
 if(a~=b)
     error('''luminance'' must be a square matrix');
 end
-%% Allow multiple outputs for testing purposes
-nargoutchk(1,5);
 
 %% Process using "blockProc"
 fun = @(block_struct) dct2(block_struct.data);
@@ -46,4 +46,13 @@ coeffTemp=cell2mat(y); % Correct
 coeff=coeffTemp';
 % Computes the DC component
 coeff(1,:)=diff([0,coeff(1,:)]);
+[~,nBlocks]=size(coeff);
+bitsUsed=0;
+for i=1:nBlocks
+   [~,compress]=jpegEncoder(coeff(:,i));
+   bitsUsed=bitsUsed+compress;
+end
+c=whos('luminance');
+bitsNeeded=c.bytes;
+compressionRatio=bitsNeeded/bitsUsed;
 end
